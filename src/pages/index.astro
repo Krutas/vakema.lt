@@ -12,8 +12,19 @@ import '../styles/global.css';
 
 const products = (await getCollection('products')).map((p) => p.data);
 const leadEndpoint = import.meta.env.PUBLIC_LEAD_ENDPOINT ?? '';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  name: 'Vakema',
+  description: 'Langų ir durų montavimas, kuris kuria Jūsų komfortą.',
+  url: 'https://vakema.lt',
+  email: 'info@vakema.lt',
+  address: { '@type': 'PostalAddress', addressCountry: 'LT' },
+  areaServed: 'Lietuva',
+};
 ---
 <BaseLayout title="Vakema — moderniems namams" description="Vakema — langų ir durų sprendimai moderniems namams.">
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   <Header />
   <main id="top">
     <Hero

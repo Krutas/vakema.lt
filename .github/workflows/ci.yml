@@ -1,0 +1,30 @@
+name: ci
+on:
+  pull_request:
+  push: { branches: [main] }
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npx astro check
+      - run: npx vitest run
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test
+      - name: Lighthouse budget
+        run: |
+          npm run preview & npx wait-on http://localhost:4321
+          npx lhci@latest autorun --collect.url=http://localhost:4321 \
+            --assert.assertions.'categories:performance'=['error',{'minScore':0.9}] \
+            --assert.assertions.'categories:accessibility'=['error',{'minScore':0.95}] || exit 1
+      - name: Deploy preview (PR) / prod (main)
+        if: success()
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          channelId: ${{ github.ref == 'refs/heads/main' && 'live' || github.head_ref }}
