@@ -6,23 +6,23 @@ const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
 
 const PRODUCTS = [
   {
-    id: 'pvc', title: 'PVC langai', short: 'Šiluma ir patikimumas', description: 'Šiluma, sandarumas ir efektyvumas kasdien.', position: '0%', energy: 'A++', u: '0.83',
+    id: 'pvc', title: 'PVC langai', short: 'Šiluma ir patikimumas', description: 'Šiluma, sandarumas ir efektyvumas kasdien.', asset: 'assets/product-pvc.svg', energy: 'A++', u: '0.83',
     variants: ['Standard', 'Premium', 'Passive'], colors: [{name:'Antracitas',value:'#36383a'},{name:'Balta',value:'#efede6'},{name:'Juoda',value:'#0b0b0b'},{name:'Ąžuolas',value:'#8c5e36'}], glazing: ['Dvigubas', 'Trigubas', 'Akustinis']
   },
   {
-    id: 'aluminium', title: 'Aliuminio langai', short: 'Modernus dizainas', description: 'Plonos linijos, dideli formatai ir architektūrinis tikslumas.', position: '25%', energy: 'A+', u: '0.92',
+    id: 'aluminium', title: 'Aliuminio langai', short: 'Modernus dizainas', description: 'Plonos linijos, dideli formatai ir architektūrinis tikslumas.', asset: 'assets/product-aluminium.svg', energy: 'A+', u: '0.92',
     variants: ['Slim', 'Thermo', 'Panorama'], colors: [{name:'Juoda',value:'#111'},{name:'Antracitas',value:'#343638'},{name:'Bronza',value:'#6f5842'}], glazing: ['Trigubas', 'Saulės kontrolė', 'Akustinis']
   },
   {
-    id: 'wood', title: 'Mediniai langai', short: 'Natūrali elegancija', description: 'Natūrali mediena su šiuolaikiniu šilumos ir garso komfortu.', position: '50%', energy: 'A++', u: '0.86',
+    id: 'wood', title: 'Mediniai langai', short: 'Natūrali elegancija', description: 'Natūrali mediena su šiuolaikiniu šilumos ir garso komfortu.', asset: 'assets/product-wood.svg', energy: 'A++', u: '0.86',
     variants: ['Classic', 'Nordic', 'Premium'], colors: [{name:'Natūralus',value:'#9b6a3c'},{name:'Tamsus ąžuolas',value:'#5f3f28'},{name:'Balta',value:'#ebe8df'}], glazing: ['Dvigubas', 'Trigubas']
   },
   {
-    id: 'doors', title: 'Įėjimo durys', short: 'Saugumas ir stilius', description: 'Tvirtos, šiltos ir architektūriškai švarios įėjimo durys.', position: '74%', energy: 'A+', u: '0.95',
+    id: 'doors', title: 'Įėjimo durys', short: 'Saugumas ir stilius', description: 'Tvirtos, šiltos ir architektūriškai švarios įėjimo durys.', asset: 'assets/product-doors.svg', energy: 'A+', u: '0.95',
     variants: ['Line', 'Vision', 'Secure'], colors: [{name:'Juoda',value:'#111'},{name:'Antracitas',value:'#3b3c3d'},{name:'Medžio',value:'#7b5132'}], glazing: []
   },
   {
-    id: 'sliding', title: 'Stumdomos sistemos', short: 'Didesnės erdvės', description: 'Daugiau šviesos, platesnės angos ir vientisas ryšys su terasa.', position: '100%', energy: 'A+', u: '0.98',
+    id: 'sliding', title: 'Stumdomos sistemos', short: 'Didesnės erdvės', description: 'Daugiau šviesos, platesnės angos ir vientisas ryšys su terasa.', asset: 'assets/product-sliding.svg', energy: 'A+', u: '0.98',
     variants: ['Slide', 'Lift & Slide', 'Panorama'], colors: [{name:'Juoda',value:'#111'},{name:'Antracitas',value:'#383a3b'},{name:'Bronza',value:'#75624b'}], glazing: ['Trigubas', 'Saulės kontrolė']
   }
 ];
@@ -48,9 +48,9 @@ const uvalue = $('[data-uvalue]');
 function productById(id){ return PRODUCTS.find(product => product.id === id) || PRODUCTS[0]; }
 
 function renderHeroProducts(){
-  heroProducts.innerHTML = PRODUCTS.map((product, index) => `
+  heroProducts.innerHTML = PRODUCTS.map(product => `
     <button class="hero-product ${product.id === state.productId ? 'is-active' : ''}" type="button" data-product="${product.id}" aria-label="${product.title}">
-      <span class="hero-product-visual"></span>
+      <span class="hero-product-visual" style="--product-image:url('${product.asset}')"></span>
       <span class="hero-product-copy"><span><strong>${product.title}</strong><small>${product.short}</small></span><b>→</b></span>
     </button>`).join('');
 }
@@ -74,7 +74,8 @@ function renderConfigurator(animate = false){
     window.setTimeout(() => productPreview.classList.remove('is-changing'), 210);
   }
 
-  productPreview.style.backgroundPosition = `${product.position} center`;
+  productPreview.style.backgroundImage = `url('${product.asset}')`;
+  productPreview.style.backgroundPosition = 'center';
   stageIndex.textContent = String(PRODUCTS.indexOf(product) + 1).padStart(2, '0');
   stageName.textContent = product.title;
   configTitle.textContent = product.title;
