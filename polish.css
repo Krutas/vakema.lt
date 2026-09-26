@@ -28,6 +28,23 @@
 .hero-product-visual{transition:border-color .3s,filter .3s}
 .hero-product:hover .hero-product-visual,.hero-product.is-active .hero-product-visual{border-bottom-color:rgba(248,214,140,.95);filter:drop-shadow(0 10px 22px rgba(234,185,88,.12))}
 
+/* Dedicated product artwork. This overrides the temporary sprite without changing the layout. */
+.hero-product-visual:after{
+  inset:8px 7% 0;
+  background-image:var(--product-image)!important;
+  background-size:contain!important;
+  background-position:center!important;
+  background-repeat:no-repeat!important;
+  transform:none!important;
+  filter:drop-shadow(0 14px 16px rgba(0,0,0,.48));
+}
+.product-preview{
+  background-size:contain!important;
+  background-repeat:no-repeat!important;
+  background-position:center!important;
+  filter:drop-shadow(0 24px 28px rgba(42,34,23,.16));
+}
+
 .trust-strip{box-shadow:0 20px 55px rgba(0,0,0,.22),inset 0 1px rgba(255,255,255,.035)}
 .trust-item,.trust-chat{transition:background .25s,border-color .25s,transform .25s}
 .trust-item:hover{background:rgba(255,255,255,.022)}
