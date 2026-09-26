@@ -1,0 +1,9 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+    match /leads/{id} {
+      allow read, update, delete: if false;   // admin SDK only
+      allow create: if false;                 // created only by the Cloud Function
+    }
+  }
+}
