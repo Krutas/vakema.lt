@@ -1,0 +1,24 @@
+---
+interface Props { action: string }
+const { action } = Astro.props;
+---
+<section id="contact" class="contact"><div><p class="eyebrow">PRADĖKIME POKALBĮ</p><h2>Jūsų namams<br /><em>tinka daugiau.</em></h2></div><form class="contact-form" data-action={action} novalidate><label>Jūsų vardas<input name="name" required placeholder="Vardas" autocomplete="name" /></label><label>El. paštas<input name="email" required type="email" placeholder="vardas@pastas.lt" autocomplete="email" /></label><label>Žinutė<textarea name="message" placeholder="Trumpai apie Jūsų projektą"></textarea></label><button class="gold-button" type="submit">Gauti pasiūlymą <span>→</span></button><p class="form-note" aria-live="polite"></p></form></section>
+
+<script>
+  import { initContactForm } from '../scripts/contact-form';
+  initContactForm();
+</script>
+
+<style>
+.contact{padding:140px clamp(24px,9vw,140px);display:grid;grid-template-columns:1fr .8fr;gap:100px;background:#121517}
+.contact h2{font-size:clamp(50px,6vw,92px);line-height:.96;letter-spacing:-.07em;font-weight:500;margin:0 0 30px}
+.contact h2 em{font-style:normal;color:var(--gold);font-weight:800}
+.contact-form{display:flex;flex-direction:column;gap:25px;align-self:center}
+.contact-form label{display:flex;flex-direction:column;gap:10px;color:#a9a69e;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.contact-form input,.contact-form textarea{border:0;border-bottom:1px solid #474b4c;background:transparent;color:#fff;padding:8px 0 14px;outline:0;resize:vertical}
+.contact-form input:focus,.contact-form textarea:focus{border-color:var(--gold)}
+.contact-form textarea{min-height:65px}
+.contact-form .gold-button{align-self:flex-start;margin-top:12px}
+.form-note{color:var(--gold);min-height:18px;font-size:12px}
+@media(max-width:720px){.contact{padding:90px 24px;display:block}.contact-form{margin-top:55px}.contact-form .gold-button{width:100%}}
+</style>

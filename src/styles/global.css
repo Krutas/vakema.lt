@@ -1,0 +1,41 @@
+:root{--ink:#090b0d;--cream:#efece5;--gold:#f5c763;--muted:#a9a69e;--line:rgba(255,255,255,.18);--ease:cubic-bezier(.76,0,.24,1)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:#fff;font-family:Manrope,Arial,sans-serif;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button,input,textarea{font:inherit}
+
+/* Shared building blocks (used by several components) */
+.gold-button{display:inline-flex;align-items:center;justify-content:center;gap:24px;border:0;border-radius:3px;background:var(--gold);color:#15130e;padding:19px 25px;font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 8px 32px rgba(245,199,99,.12);transition:transform .35s var(--ease),box-shadow .35s}
+.gold-button:hover{transform:translateY(-4px);box-shadow:0 16px 42px rgba(245,199,99,.28)}
+.gold-button span{font-size:21px;font-weight:400;line-height:0}
+.gold-button.small{padding:17px 22px;border-radius:28px}
+.eyebrow{font-size:12px;letter-spacing:.28em;color:var(--gold);font-weight:800;margin:0 0 28px}
+.eyebrow.dark{color:#ad7f26}
+.text-link{font-size:11px;text-transform:uppercase;letter-spacing:.12em;font-weight:800;border-bottom:1px solid rgba(255,255,255,.45);padding-bottom:13px}
+.text-link span{font-size:20px;margin-left:13px}
+.outline-button{display:inline-flex;gap:22px;padding:18px 0;border-bottom:1px solid var(--gold);font-size:11px;letter-spacing:.13em;text-transform:uppercase;font-weight:800}
+.outline-button span{font-size:20px}
+.section-light{background:var(--cream);color:var(--ink)}
+
+/* Entrance animations */
+.reveal{animation:rise 1s .2s both var(--ease)}
+.delay-1{animation-delay:.32s}
+.delay-2{animation-delay:.46s}
+.delay-3{animation-delay:.6s}
+@keyframes rise{from{opacity:0;transform:translateY(28px);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
+
+/* UX hardening */
+.skip-link{position:fixed;left:16px;top:12px;z-index:100;padding:12px 16px;background:var(--gold);color:#15130e;font-weight:800;transform:translateY(-160%);transition:transform .2s}
+.skip-link:focus{transform:none}
+:where(a,button,input,textarea):focus-visible{outline:2px solid var(--gold);outline-offset:4px}
+
+/* Page-wipe transition overlay */
+.page-wipe{position:fixed;inset:0;z-index:50;pointer-events:none;display:flex;transform:translateY(-100%)}
+.page-wipe span,.page-wipe i{display:block;width:50%;height:100%;background:#101416;transform:translateY(0);transition:transform .7s var(--ease)}
+.page-wipe i{background:var(--gold);opacity:.98;transition-delay:.06s}
+.page-wipe.is-active{transform:none}
+.page-wipe.is-active span,.page-wipe.is-active i{transform:translateY(100%)}
+
+@media(max-width:720px){.gold-button{padding:17px 18px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.reveal{animation:none}.hero-image,.gold-button,.hotspot,.page-wipe span,.page-wipe i{transition:none}.page-wipe{display:none}}

@@ -1,0 +1,19 @@
+---
+interface Step { n: string; title: string; body: string }
+interface Props { steps: Step[] }
+const { steps } = Astro.props;
+---
+<section id="about" class="process section-light"><p class="eyebrow dark">PAPRASTA EIGA</p><h2>Nuo idėjos iki<br /><em>jūsų namų.</em></h2><div class="process-grid">{steps.map((step) => <div><span>{step.n}</span><h3>{step.title}</h3><p>{step.body}</p></div>)}</div></section>
+
+<style>
+.process{padding:130px clamp(24px,9vw,140px)}
+.process h2{font-size:clamp(40px,5vw,76px);line-height:1;letter-spacing:-.06em;font-weight:500;margin:0}
+.process h2 em{font-style:normal;color:var(--gold);font-weight:800}
+.process-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:90px;border-top:1px solid #c9c4bb}
+.process-grid>div{padding:28px 38px 0 0;border-right:1px solid #c9c4bb}
+.process-grid>div+div{padding-left:38px}
+.process-grid span{font-size:12px;color:#af7e22;letter-spacing:.14em}
+.process-grid h3{font-size:21px;margin:50px 0 15px}
+.process-grid p{color:#686660;font-size:14px;line-height:1.7;max-width:245px}
+@media(max-width:720px){.process{padding:90px 24px}.process-grid{display:block;margin-top:55px}.process-grid>div,.process-grid>div+div{padding:24px 0;border-right:0;border-bottom:1px solid #c9c4bb}.process-grid h3{margin:24px 0 10px}}
+</style>

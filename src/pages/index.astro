@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Solutions from '../components/Solutions.astro';
+import Manifesto from '../components/Manifesto.astro';
+import Process from '../components/Process.astro';
+import ContactForm from '../components/ContactForm.astro';
+import Footer from '../components/Footer.astro';
+import { getCollection } from 'astro:content';
+import '../styles/global.css';
+
+const products = (await getCollection('products')).map((p) => p.data);
+const leadEndpoint = import.meta.env.PUBLIC_LEAD_ENDPOINT ?? '';
+---
+<BaseLayout title="Vakema — moderniems namams" description="Vakema — langų ir durų sprendimai moderniems namams.">
+  <Header />
+  <main id="top">
+    <Hero
+      eyebrow="LANGŲ IR DURŲ SPRENDIMAI"
+      title="Moderniems"
+      titleEm={['patikimi', 'sprendimai']}
+      copy="Langų ir durų montavimas, kuris kuria Jūsų komfortą."
+      hotspots={[
+        { label: 'Langai', href: '#solutions', class: 'window' },
+        { label: 'Durys', href: '#solutions', class: 'doors' },
+      ]}
+    />
+    <Solutions items={products} />
+    <Manifesto />
+    <Process steps={[
+      { n: '01', title: 'Susipažįstame', body: 'Išgirstame, ko reikia Jūsų erdvei ir gyvenimo ritmui.' },
+      { n: '02', title: 'Suprojektuojame', body: 'Pasiūlome medžiagas, spalvas ir sprendimą be pertekliaus.' },
+      { n: '03', title: 'Įgyvendiname', body: 'Montuojame tiksliai, švariai ir su atsakomybe.' },
+    ]} />
+    <ContactForm action={leadEndpoint} />
+  </main>
+  <Footer />
+</BaseLayout>

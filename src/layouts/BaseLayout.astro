@@ -1,0 +1,28 @@
+---
+interface Props { title: string; description: string; }
+const { title, description } = Astro.props;
+---
+<!doctype html>
+<html lang="lt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#080a0c" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#top">Pereiti prie turinio</a>
+    <div class="page-wipe" aria-hidden="true"><span></span><i></i></div>
+    <slot />
+    <script>
+      import { initPageWipe } from '../scripts/page-wipe';
+      initPageWipe();
+    </script>
+  </body>
+</html>

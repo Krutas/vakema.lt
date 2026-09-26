@@ -1,0 +1,49 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/vakema-logo.png';
+---
+<header id="navigation-bar" class="site-header" data-component="navigation-bar">
+  <a class="brand" href="#top" aria-label="Vakema pradžia"><Image src={logo} alt="Vakema" width={317} /></a>
+  <nav id="primary-navigation" class="desktop-nav" aria-label="Pagrindinė navigacija">
+    <a class="active" href="#top">Pagrindinis</a>
+    <a href="#solutions">Langai</a>
+    <a href="#solutions">Durys</a>
+    <a href="#services">Paslaugos</a>
+    <a href="#about">Mūsų darbai</a>
+    <a href="#about">Apie mus</a>
+    <a href="#contact">Kontaktai</a>
+  </nav>
+  <div class="header-actions"><button class="locale" type="button" aria-label="Pasirinkta kalba: lietuvių">LT</button><a class="gold-button small" href="#contact">Gauti pasiūlymą <span>↗</span></a><button class="menu-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" aria-label="Atidaryti meniu">☰</button></div>
+</header>
+
+<script>
+  import { initMenu } from '../scripts/menu';
+  initMenu();
+</script>
+
+<style>
+.site-header{height:112px;position:absolute;z-index:10;inset:0 0 auto;display:flex;align-items:center;padding:0 clamp(24px,5vw,76px);gap:clamp(20px,4vw,70px)}
+.brand img{width:186px;height:auto;display:block;filter:brightness(1.12)}
+/* Enlarge only the logo's painted pixels; the header layout box stays unchanged. */
+.brand img{transform:scale(1.7);transform-origin:left center;position:relative;z-index:2}
+.desktop-nav{display:flex;gap:clamp(18px,2.2vw,34px);align-items:center;margin-left:auto}
+.desktop-nav a{font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#d5d2cd;position:relative;padding:12px 0;white-space:nowrap}
+.desktop-nav a:after{content:"";position:absolute;left:50%;right:50%;bottom:0;height:2px;background:var(--gold);transition:.35s var(--ease)}
+.desktop-nav a:hover:after,.desktop-nav a.active:after{left:0;right:0}
+.header-actions{display:flex;align-items:center;gap:14px}
+.locale{width:55px;height:44px;border-radius:24px;border:1px solid rgba(255,255,255,.34);background:transparent;color:#fff;font-size:12px}
+.menu-toggle{display:none;background:none;border:0;color:#fff;font-size:25px;min-width:44px;min-height:44px}
+@media(max-width:1000px){.desktop-nav{gap:14px}.desktop-nav a{font-size:9px}.site-header{gap:20px}.brand img{width:145px}.header-actions{margin-left:auto}}
+@media(max-width:720px){
+  .site-header{height:88px;padding:0 20px}
+  .brand img{width:130px;transform:scale(1.45);transform-origin:left center}
+  .desktop-nav,.locale,.header-actions .gold-button{display:none}
+  .menu-toggle{display:block}
+  .desktop-nav{display:none;position:absolute;top:76px;left:16px;right:16px;padding:12px;background:rgba(9,11,13,.96);border:1px solid rgba(255,255,255,.16);border-radius:14px;box-shadow:0 18px 45px rgba(0,0,0,.35);backdrop-filter:blur(16px)}
+  .desktop-nav.mobile-open{display:flex;flex-direction:column;align-items:stretch;gap:2px}
+  .desktop-nav.mobile-open a{padding:15px 14px;font-size:11px;border-radius:8px}
+  .desktop-nav.mobile-open a:hover,.desktop-nav.mobile-open a:focus-visible{background:rgba(245,199,99,.12)}
+  .desktop-nav.mobile-open a:after{display:none}
+  .menu-toggle{display:grid;place-items:center;width:44px;height:44px;padding:0;border:1px solid rgba(255,255,255,.28);border-radius:50%;background:rgba(8,10,12,.4);color:#fff;font-size:20px}
+}
+</style>

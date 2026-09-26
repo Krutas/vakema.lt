@@ -1,0 +1,67 @@
+---
+export interface Product {
+  title: string;
+  description: string;
+  image: string;
+  position?: string;
+  href?: string;
+}
+interface Props { items: Product[] }
+const { items } = Astro.props;
+const total = String(items.length).padStart(2, '0');
+---
+<div class="product-carousel" data-product-carousel aria-label="Produktų kategorijos">
+  <div class="product-carousel-toolbar">
+    <span class="product-carousel-count" aria-live="polite">01 / {total}</span>
+    <div class="product-carousel-controls">
+      <button class="carousel-button" type="button" data-carousel-prev aria-label="Ankstesni produktai">←</button>
+      <button class="carousel-button" type="button" data-carousel-next aria-label="Kiti produktai">→</button>
+    </div>
+  </div>
+  <div class="product-carousel-viewport">
+    <div class="product-carousel-track" data-product-track>
+      {items.map((item, index) => (
+        <article class="product-card">
+          <div class="product-card-image" style={`background-image:url('${item.image}');background-position:${item.position || 'center'}`}></div>
+          <div class="product-card-content">
+            <span class="product-card-index">{String(index + 1).padStart(2, '0')} / {total}</span>
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+            <a class="product-card-link" href={item.href || '#contact'}>Atrasti sprendimą <span aria-hidden="true">↗</span></a>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</div>
+
+<script>
+  import { initCarousel } from '../scripts/carousel';
+  initCarousel();
+</script>
+
+<style>
+/* Reusable product carousel: content is supplied by the products content collection. */
+.product-carousel{position:relative}
+.product-carousel-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;color:#817d73;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:800}
+.product-carousel-count{color:#a87520}
+.product-carousel-controls{display:flex;gap:10px}
+.carousel-button{width:46px;height:46px;border:1px solid #b9b2a7;border-radius:50%;background:transparent;color:#242321;font-size:20px;cursor:pointer;transition:background .25s,color .25s,transform .25s}
+.carousel-button:hover{background:var(--gold);color:#15130e;transform:translateY(-2px)}
+.product-carousel-viewport{overflow:hidden;margin:0 -2px;padding:2px}
+.product-carousel-track{display:flex;gap:18px;transition:transform .65s var(--ease);will-change:transform}
+.product-card{position:relative;flex:0 0 calc((100% - 36px)/3);min-height:500px;overflow:hidden;background:#171a1b;color:#fff;border-radius:2px;isolation:isolate}
+.product-card-image{position:absolute;inset:0;background:#1d2021 center/cover no-repeat;transition:transform .8s var(--ease)}
+.product-card:before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(0deg,rgba(5,7,8,.92),rgba(5,7,8,.08) 68%)}
+.product-card:hover .product-card-image{transform:scale(1.06)}
+.product-card-content{position:absolute;z-index:2;left:26px;right:26px;bottom:26px}
+.product-card-index{color:var(--gold);font-size:11px;letter-spacing:.14em}
+.product-card h3{margin:12px 0 8px;font-size:27px;font-weight:600;line-height:1.05}
+.product-card p{margin:0 0 20px;color:#d5d2cd;font-size:13px;line-height:1.5}
+.product-card-link{display:inline-flex;align-items:center;gap:12px;color:#fff;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.product-card-link span{display:grid;place-items:center;width:30px;height:30px;border:1px solid rgba(245,199,99,.8);border-radius:50%;color:var(--gold);font-size:17px;transition:background .25s,color .25s}
+.product-card-link:hover span{background:var(--gold);color:#15130e}
+@media(max-width:1000px){.product-card{flex-basis:calc((100% - 18px)/2)}}
+@media(max-width:720px){.product-carousel-toolbar{margin-bottom:18px}.product-card{flex-basis:84vw;min-height:390px}.product-carousel-track{gap:12px}.product-card-content{left:20px;right:20px;bottom:20px}.carousel-button{width:42px;height:42px}}
+@media(prefers-reduced-motion:reduce){.product-carousel-track,.product-card-image,.carousel-button{transition:none}}
+</style>

@@ -1,14 +1,23 @@
 {
-  "name": "vakema-immersive-landing",
+  "name": "vakema",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "vite"
-  },
-  "devDependencies": {
-    "vite": "8.3.1"
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
   },
   "engines": {
     "node": ">=22"
+  },
+  "dependencies": {
+    "astro": "5.18.2",
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "typescript": "^5.6.3"
   }
 }
