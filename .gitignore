@@ -8,3 +8,5 @@ functions/node_modules/
 functions/lib/
 playwright-report/
 test-results/
+
+.astro/

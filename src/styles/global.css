@@ -1,4 +1,4 @@
-:root{--ink:#090b0d;--cream:#efece5;--gold:#f5c763;--muted:#a9a69e;--line:rgba(255,255,255,.18);--ease:cubic-bezier(.76,0,.24,1)}
+:root{--ink:#090b0d;--cream:#efece5;--gold:#f5c763;--gold-dark:#8a5f14;--muted:#a9a69e;--line:rgba(255,255,255,.18);--ease:cubic-bezier(.76,0,.24,1)}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--ink);color:#fff;font-family:Manrope,Arial,sans-serif;overflow-x:hidden}
@@ -11,7 +11,7 @@ button,input,textarea{font:inherit}
 .gold-button span{font-size:21px;font-weight:400;line-height:0}
 .gold-button.small{padding:17px 22px;border-radius:28px}
 .eyebrow{font-size:12px;letter-spacing:.28em;color:var(--gold);font-weight:800;margin:0 0 28px}
-.eyebrow.dark{color:#ad7f26}
+.eyebrow.dark{color:var(--gold-dark)}
 .text-link{font-size:11px;text-transform:uppercase;letter-spacing:.12em;font-weight:800;border-bottom:1px solid rgba(255,255,255,.45);padding-bottom:13px}
 .text-link span{font-size:20px;margin-left:13px}
 .outline-button{display:inline-flex;gap:22px;padding:18px 0;border-bottom:1px solid var(--gold);font-size:11px;letter-spacing:.13em;text-transform:uppercase;font-weight:800}
