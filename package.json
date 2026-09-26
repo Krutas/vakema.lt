@@ -1,11 +1,11 @@
 {
   "name": "vakema-immersive-landing",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/copy-static.mjs",
     "preview": "vite preview"
   },
   "devDependencies": {
