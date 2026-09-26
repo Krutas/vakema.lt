@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 520" role="img" aria-label="PVC lango iliustracija">
+<defs><linearGradient id="f" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#17191b"/><stop offset=".5" stop-color="#45484b"/><stop offset="1" stop-color="#0b0c0d"/></linearGradient><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#d8ecf2" stop-opacity=".68"/><stop offset="1" stop-color="#6f8993" stop-opacity=".18"/></linearGradient><filter id="s"><feDropShadow dx="0" dy="24" stdDeviation="18" flood-opacity=".35"/></filter></defs>
+<ellipse cx="320" cy="455" rx="210" ry="28" fill="#000" opacity=".22"/>
+<g filter="url(#s)" transform="translate(96 44)"><rect width="448" height="376" rx="18" fill="url(#f)"/><rect x="28" y="28" width="392" height="320" rx="10" fill="#111416"/><rect x="48" y="48" width="352" height="280" rx="6" fill="url(#g)"/><path d="M224 48v280" stroke="#24272a" stroke-width="24"/><path d="M234 52v272" stroke="#55595d" stroke-width="2" opacity=".8"/><path d="M69 73l127 228M253 72l126 225" stroke="#fff" stroke-opacity=".08" stroke-width="5"/></g>
+</svg>
