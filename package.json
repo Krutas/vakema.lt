@@ -2,6 +2,13 @@
   "name": "vakema-immersive-landing",
   "version": "1.0.0",
   "private": true,
-  "scripts": {"dev": "vite"},
-  "devDependencies": {"vite": "latest"}
+  "scripts": {
+    "dev": "vite"
+  },
+  "devDependencies": {
+    "vite": "8.3.1"
+  },
+  "engines": {
+    "node": ">=22"
+  }
 }
