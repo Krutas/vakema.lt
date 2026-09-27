@@ -1,11 +1,11 @@
-# vakema.lt
+# Vakema.lt
 
-Vakema landing page source.
+Vieša bandomoji būsimos oficialios **Vakema.lt** svetainės versija.
 
-## Local preview
+Projektas dar aktyviai kuriamas, todėl dizainas, tekstai, produktų informacija ir funkcijos gali keistis. Ši ankstyva versija paskelbta viešam testavimui — kviečiame išbandyti svetainę telefone ir kompiuteryje bei pranešti apie pastebėtas klaidas ar nepatogumus.
 
-```bash
-python -m http.server 8080
-```
+## Projekto būsena
 
-Open `http://localhost:8080`.
+- Ankstyva vieša peržiūra
+- Ne galutinė oficialios svetainės versija
+- Vyksta dizaino, turinio ir funkcionalumo tobulinimas
