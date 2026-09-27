@@ -135,20 +135,61 @@ const hero = $('[data-hero]');
 const heroCamera = $('[data-hero-camera]');
 let targetX = 0, targetY = 0, currentX = 0, currentY = 0, raf = null;
 function parallaxFrame(){
-  currentX += (targetX - currentX) * 0.065;
-  currentY += (targetY - currentY) * 0.065;
-  heroCamera.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) scale(1.02)`;
+  currentX += (targetX - currentX) * 0.075;
+  currentY += (targetY - currentY) * 0.075;
+  heroCamera.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) scale(1.06)`;
   if(Math.abs(targetX-currentX) > .08 || Math.abs(targetY-currentY) > .08) raf = requestAnimationFrame(parallaxFrame); else raf = null;
+}
+function queueParallax(){
+  if(!raf) raf = requestAnimationFrame(parallaxFrame);
 }
 if(!reduceMotion && !coarsePointer && hero && heroCamera){
   hero.addEventListener('pointermove', event => {
     const rect = hero.getBoundingClientRect();
     const nx = (event.clientX - rect.left) / rect.width - .5;
     const ny = (event.clientY - rect.top) / rect.height - .5;
-    targetX = nx * -46; targetY = ny * -28;
-    if(!raf) raf = requestAnimationFrame(parallaxFrame);
+    targetX = nx * -58;
+    targetY = ny * -34;
+    queueParallax();
   }, {passive:true});
-  hero.addEventListener('pointerleave', () => { targetX = 0; targetY = 0; if(!raf) raf = requestAnimationFrame(parallaxFrame); });
+  hero.addEventListener('pointerleave', () => {
+    targetX = 0;
+    targetY = 0;
+    queueParallax();
+  });
+}
+
+let mobileParallaxEnabled = false;
+const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+function handleDeviceTilt(event){
+  const gamma = clamp(event.gamma || 0, -30, 30);
+  const beta = clamp((event.beta || 45) - 45, -30, 30);
+  targetX = gamma / 30 * -28;
+  targetY = beta / 30 * -18;
+  queueParallax();
+}
+async function enableMobileParallax(){
+  if(mobileParallaxEnabled || reduceMotion || !coarsePointer || !heroCamera) return;
+  const orientation = window.DeviceOrientationEvent;
+  if(!orientation) return;
+  try{
+    if(typeof orientation.requestPermission === 'function'){
+      const permission = await orientation.requestPermission();
+      if(permission !== 'granted') return;
+    }
+    window.addEventListener('deviceorientation', handleDeviceTilt, {passive:true});
+    mobileParallaxEnabled = true;
+  }catch(error){
+    console.info('Telefono judesio sensorius nepasiekiamas.', error);
+  }
+}
+if(!reduceMotion && coarsePointer && hero && heroCamera){
+  const orientation = window.DeviceOrientationEvent;
+  if(orientation && typeof orientation.requestPermission === 'function'){
+    hero.addEventListener('pointerup', enableMobileParallax, {once:true});
+  }else{
+    enableMobileParallax();
+  }
 }
 
 const header = $('[data-header]');
