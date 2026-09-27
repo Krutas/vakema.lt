@@ -85,7 +85,10 @@
   :root{--header-h:78px}
   .hero{min-height:900px;padding-bottom:198px}
   .hero-copy{left:20px;top:35%;width:calc(100% - 40px)}
-  .hero h1{font-size:clamp(42px,13vw,58px)}
+  .hero h1{font-size:clamp(38px,11.5vw,52px)}
+  .header-actions .button-header{display:none}
+  .mobile-menu .button[data-open-quote]{display:none}
+  .hero-actions .video-link{display:none}
   .hero-lead{max-width:310px}
   .hotspot{height:36px;padding-right:11px}
   .hotspot-plus{width:27px;height:27px}
