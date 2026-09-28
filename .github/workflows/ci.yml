@@ -17,6 +17,11 @@ jobs:
       - run: npx astro check
       - run: npx vitest run
       - run: npm run build
+      - name: Functions typecheck (own package)
+        run: |
+          cd functions
+          npm ci
+          npm run build
       - run: npx playwright install --with-deps chromium
       - run: npx playwright test
       - name: Lighthouse budget
