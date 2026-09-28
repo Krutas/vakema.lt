@@ -436,3 +436,11 @@ TDD cycle per task: failing test → run → see it fail → implement → green
 - **`FIREBASE_SERVICE_ACCOUNT` repo secret** — not set; `ci.yml` deploy step stays inert until it exists.
 - **`vakema.lt/main` untouched** — the live site was never modified this session.
 - **Assets** — real product photos and copy still to be supplied; placeholder images remain in place.
+
+## Addendum 2026-09-28 (post-execution verification)
+
+- **Local hosting**: `npm run preview -- --host 127.0.0.1` → http://127.0.0.1:4321 (server left running during the session).
+- **Performance hardening**: hero moved from a raw 1.2 MB CSS-background JPEG to a `<Picture>` (AVIF/WebP, 5 widths, `fetchpriority=high`, `fallbackFormat=webp`). LCP 8.0 s → 2.8 s; Lighthouse perf 73 → 93 (a11y/bp/seo 100); manifesto now WebP via `getImage`; product card PNG 105 KB → WebP 45 KB; `dist/` 4.6 MB → 2.3 MB; dead duplicates removed (7 files).
+- **CI is live and green on the branch**: run [36428872576](https://github.com/Krutas/vakema.lt/actions/runs/36428872576) — astro check, vitest, build, functions tsc, playwright (7/7), Lighthouse budget (perf ≥ .9, a11y ≥ .95) all pass in 1:53; deploy step is secret-gated and skipped until `FIREBASE_SERVICE_ACCOUNT` exists.
+- **CI fixes vs. the original plan**: `lighthouserc.json` instead of inline CLI assertion flags; job-level env boolean for the secret gate (secrets are illegal in `if:`); `functions/` excluded from the root `astro check` (it has its own package) and typechecked separately; playwright `webServer` pinned to `127.0.0.1:4321`.
+- **Still open**: PR to `vakema.lt/main` (unrelated histories — rebase required), Firebase Phase 5, real content, EN locale. `_legacy/` stays until the rewrite is adopted.
