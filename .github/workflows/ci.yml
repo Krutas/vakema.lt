@@ -1,31 +1,38 @@
-name: CI
-
+name: ci
 on:
-  push:
-    branches: [main]
   pull_request:
-
-permissions:
-  contents: read
-
+  push: { branches: [main, feat/astro-production-migration] }
 jobs:
-  build:
+  build-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # Secrets cannot be used directly in `if:` conditionals (GitHub docs);
+    # expose a boolean via job-level env and let steps reference that.
+    env:
+      FIREBASE_DEPLOY_ENABLED: ${{ secrets.FIREBASE_SERVICE_ACCOUNT != '' }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npx astro check
+      - run: npx vitest run
+      - run: npm run build
+      - name: Functions typecheck (own package)
+        run: |
+          cd functions
+          npm ci
+          npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test
+      - name: Lighthouse budget
+        run: |
+          npm run preview -- --host 127.0.0.1 &
+          npx wait-on http://127.0.0.1:4321
+          npx lhci autorun
+      - name: Deploy preview (PR) / prod (main)
+        if: ${{ env.FIREBASE_DEPLOY_ENABLED == 'true' }}
+        uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          node-version: 22
-
-      - name: Install dependencies
-        run: npm ci --no-audit --no-fund
-
-      - name: JavaScript syntax check
-        run: node --check app.js
-
-      - name: Build
-        run: npm run build
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          channelId: ${{ github.ref == 'refs/heads/main' && 'live' || github.head_ref }}
