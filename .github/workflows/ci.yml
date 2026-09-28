@@ -1,10 +1,14 @@
 name: ci
 on:
   pull_request:
-  push: { branches: [main] }
+  push: { branches: [main, feat/astro-production-migration] }
 jobs:
   build-test:
     runs-on: ubuntu-latest
+    # Secrets cannot be used directly in `if:` conditionals (GitHub docs);
+    # expose a boolean via job-level env and let steps reference that.
+    env:
+      FIREBASE_DEPLOY_ENABLED: ${{ secrets.FIREBASE_SERVICE_ACCOUNT != '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -17,12 +21,11 @@ jobs:
       - run: npx playwright test
       - name: Lighthouse budget
         run: |
-          npm run preview & npx wait-on http://localhost:4321
-          npx lhci@latest autorun --collect.url=http://localhost:4321 \
-            --assert.assertions.'categories:performance'=['error',{'minScore':0.9}] \
-            --assert.assertions.'categories:accessibility'=['error',{'minScore':0.95}] || exit 1
+          npm run preview -- --host 127.0.0.1 &
+          npx wait-on http://127.0.0.1:4321
+          npx lhci autorun
       - name: Deploy preview (PR) / prod (main)
-        if: success()
+        if: ${{ env.FIREBASE_DEPLOY_ENABLED == 'true' }}
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}

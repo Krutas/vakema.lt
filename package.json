@@ -10,6 +10,7 @@
     "astro": "astro",
     "test": "vitest run",
     "test:e2e": "playwright test",
+    "lighthouse": "lhci autorun",
     "check": "astro check"
   },
   "engines": {
@@ -22,6 +23,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
     "@astrojs/sitemap": "^3.7.4",
+    "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.63.0",
     "axe-playwright": "^2.2.2",
     "typescript": "^5.6.3",
