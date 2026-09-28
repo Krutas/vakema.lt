@@ -1,0 +1,50 @@
+---
+import { Picture } from 'astro:assets';
+import heroSrc from '../assets/hero-house.jpg';
+interface Hotspot { label: string; href: string; class: string }
+interface Props {
+  eyebrow: string;
+  title: string;
+  titleEm: string[];
+  copy: string;
+  hotspots: Hotspot[];
+}
+const { eyebrow, title, titleEm, copy, hotspots } = Astro.props;
+---
+<section class="hero" data-section="01">
+  <Picture class="hero-image" src={heroSrc} widths={[640, 960, 1280, 1600, 1920]} sizes="100vw" formats={['avif', 'webp']} fallbackFormat="webp" quality={72} alt="" aria-hidden="true" loading="eager" fetchpriority="high" data-depth="0.18" /><div class="hero-shade"></div><div class="grain"></div>
+  <div class="hero-content">
+    <p class="eyebrow reveal">{eyebrow}</p>
+    <h1 class="reveal delay-1">{title}<br />namams —<br />{titleEm.map((em) => <><em>{em}</em><br /></>)}</h1>
+    <p class="hero-copy reveal delay-2">{copy}</p>
+    <div class="hero-actions reveal delay-3"><a class="gold-button" href="#contact">Gauti pasiūlymą <span>→</span></a><a class="text-link" href="#solutions">Peržiūrėti sprendimus <span>↘</span></a></div>
+  </div>
+  {hotspots.map((h) => <a class={`hotspot ${h.class}`} href={h.href}><span aria-hidden="true">+</span>{h.label}</a>)}
+  <div class="section-index"><strong>01</strong><span></span><span>02</span><span>03</span></div>
+  <div class="scroll-cue"><span></span> slinkite žemyn</div>
+</section>
+
+<style>
+.hero{min-height:100vh;position:relative;display:flex;align-items:center;overflow:hidden;padding:150px clamp(24px,9vw,140px) 90px}
+.hero-image,.hero-shade,.grain{position:absolute;inset:0}
+.hero-image{width:100%;height:100%;object-fit:cover;object-position:center center;transform:scale(1.14);will-change:transform}
+.hero-shade{background:linear-gradient(90deg,rgba(5,7,9,.91) 0%,rgba(5,7,9,.61) 42%,rgba(5,7,9,.08) 100%),linear-gradient(0deg,rgba(5,7,9,.65) 0%,transparent 55%)}
+.grain{opacity:.08;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E");mix-blend-mode:screen}
+.hero-content{position:relative;z-index:2;width:min(580px,90vw)}
+.hero h1{font-size:clamp(48px,6.2vw,94px);line-height:.96;letter-spacing:-.065em;text-transform:uppercase;margin:0;font-weight:500}
+.hero h1 em{font-style:normal;color:var(--gold);font-weight:800}
+.hero-copy{font-size:16px;color:#d5d2cd;line-height:1.7;max-width:380px;margin:35px 0}
+.hero-actions{display:flex;align-items:center;gap:34px}
+.hotspot{position:absolute;z-index:3;display:flex;align-items:center;gap:13px;padding:12px 20px 12px 10px;background:rgba(8,10,12,.58);border:1px solid rgba(255,255,255,.26);backdrop-filter:blur(10px);border-radius:28px;font-size:13px;transition:transform .4s var(--ease),background .4s;cursor:pointer}
+.hotspot span{display:grid;place-items:center;background:var(--gold);color:#13100a;border-radius:50%;width:30px;height:30px;font-size:22px}
+.hotspot:hover{transform:scale(1.07);background:rgba(245,199,99,.16)}
+.window{top:34%;left:57%}
+.doors{top:57%;left:73%}
+.section-index{position:absolute;right:4.8%;top:46%;z-index:3;display:flex;flex-direction:column;align-items:center;gap:20px;color:#9f9c95;font-size:11px}
+.section-index strong{color:#fff}
+.section-index span:nth-of-type(1){height:45px;width:1px;background:var(--gold)}
+.scroll-cue{position:absolute;bottom:37px;left:clamp(24px,9vw,140px);z-index:3;color:#a9a69e;text-transform:uppercase;letter-spacing:.18em;font-size:10px;display:flex;gap:14px;align-items:center}
+.scroll-cue span{width:34px;height:1px;background:var(--gold)}
+@media(max-width:1000px){.hotspot.window{left:52%}.hotspot.doors{left:auto;right:9%}}
+@media(max-width:720px){.hero{padding:130px 24px 80px;min-height:780px}.hero h1{font-size:53px}.hero-copy{font-size:14px;margin:27px 0}.hero-actions{gap:18px;flex-wrap:wrap}.hotspot{font-size:11px;padding:8px 13px 8px 7px}.hotspot span{width:25px;height:25px;font-size:18px}.window{top:42%;left:auto;right:9%}.doors{top:57%;right:9%}.section-index{right:18px}.scroll-cue{left:24px}}
+</style>

@@ -1,0 +1,12 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/vakema-logo.png';
+---
+<footer><Image src={logo} alt="Vakema" width={221} /><span>© 2026 Vakema. Kokybė, patirtis, Jūsų ramybė.</span><a href="#top">Į viršų ↑</a></footer>
+
+<style>
+footer{display:flex;align-items:center;justify-content:space-between;padding:32px clamp(24px,5vw,76px);color:#8e8b83;font-size:11px;letter-spacing:.06em}
+footer img{width:130px;height:auto;filter:none}
+footer a{color:var(--gold)}
+@media(max-width:720px){footer{gap:18px;flex-wrap:wrap}footer span{order:3;width:100%}}
+</style>

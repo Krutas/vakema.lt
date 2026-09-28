@@ -1,14 +1,32 @@
 {
-  "name": "vakema-immersive-landing",
-  "version": "1.1.1",
+  "name": "vakema",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build && node scripts/copy-static.mjs",
-    "preview": "vite preview"
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "lighthouse": "lhci autorun",
+    "check": "astro check"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "astro": "5.18.2",
+    "sharp": "^0.33.5"
   },
   "devDependencies": {
-    "vite": "latest"
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/sitemap": "^3.7.4",
+    "@lhci/cli": "^0.15.1",
+    "@playwright/test": "^1.63.0",
+    "axe-playwright": "^2.2.2",
+    "typescript": "^5.6.3",
+    "vitest": "^5.0.2"
   }
 }

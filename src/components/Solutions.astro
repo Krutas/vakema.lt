@@ -1,0 +1,18 @@
+---
+import ProductCarousel, { type Product } from './ProductCarousel.astro';
+interface Props { items: Product[] }
+const { items } = Astro.props;
+---
+<section id="solutions" class="solutions section-light">
+  <div class="section-head"><div><p class="eyebrow dark">KASDIENIAM KOMFORTUI</p><h2>Sprendimai, kurie<br /><em>jaučiasi</em> kasdien.</h2></div><p class="section-intro">Nuo pirmo matavimo iki paskutinio sureguliavimo — pasirūpiname, kad Jūsų namai būtų šilti, tylūs ir gražūs.</p></div>
+  <ProductCarousel items={items} />
+</section>
+
+<style>
+.solutions{padding:140px clamp(24px,9vw,140px)}
+.section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:60px;margin-bottom:62px}
+.solutions h2{font-size:clamp(40px,5vw,76px);line-height:1;letter-spacing:-.06em;font-weight:500;margin:0}
+.solutions h2 em{font-style:normal;color:var(--gold-dark);font-weight:800}
+.section-intro{max-width:350px;color:#696760;line-height:1.8;font-size:14px}
+@media(max-width:720px){.solutions{padding:90px 24px}.section-head{display:block;margin-bottom:40px}.section-intro{margin-top:28px}}
+</style>

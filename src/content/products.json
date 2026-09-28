@@ -1,0 +1,34 @@
+[
+  {
+    "id": "pvc-langai",
+    "title": "PVC langai",
+    "description": "Šiluma ir efektyvumas",
+    "image": "/assets/product-carousel-reference.webp",
+    "position": "8% center",
+    "href": "#contact"
+  },
+  {
+    "id": "aliuminio-langai",
+    "title": "Aliuminio langai",
+    "description": "Modernus dizainas",
+    "image": "/assets/product-carousel-reference.webp",
+    "position": "31% center",
+    "href": "#contact"
+  },
+  {
+    "id": "mediniai-langai",
+    "title": "Mediniai langai",
+    "description": "Natūrali elegancija",
+    "image": "/assets/product-carousel-reference.webp",
+    "position": "53% center",
+    "href": "#contact"
+  },
+  {
+    "id": "stumdomos-sistemos",
+    "title": "Stumdomos sistemos",
+    "description": "Daugiau erdvės",
+    "image": "/assets/product-carousel-reference.webp",
+    "position": "94% center",
+    "href": "#contact"
+  }
+]
