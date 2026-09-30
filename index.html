@@ -12,12 +12,13 @@
   <meta name="twitter:card" content="summary_large_image" />
   <title>Vakema – patikimi sprendimai moderniems namams</title>
   <link rel="icon" href="assets/vakema-logo.png" />
-  <link rel="preload" as="image" href="assets/hero-house.jpg" fetchpriority="high" />
+  <link rel="preload" as="image" href="assets/hero-house.webp" fetchpriority="high" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="polish.css" />
+  <link rel="stylesheet" href="motion.css" />
 </head>
 <body>
   <a class="skip-link" href="#main">Pereiti prie turinio</a>
@@ -64,12 +65,12 @@
       <div class="hero-grain" aria-hidden="true"></div>
 
       <div class="hero-copy">
-        <p class="kicker reveal reveal-1">KOKYBĖ. PATIKIMUMAS. JŪSŲ RAMYBĖ.</p>
-        <h1 class="reveal reveal-2">Moderniems<br>namams <span>–</span><br><strong>patikimi<br>sprendimai</strong></h1>
-        <p class="hero-lead reveal reveal-3">Langų ir durų montavimas, kuris kuria Jūsų komfortą.</p>
+        <p class="kicker reveal reveal-1">VAKEMA · LANGAI IR DURYS</p>
+        <h1 class="reveal reveal-2">Šviesa kuria<br><strong>namus.</strong></h1>
+        <p class="hero-lead reveal reveal-3">Langų ir durų sprendimai Jūsų erdvei.</p>
         <div class="hero-actions reveal reveal-4">
-          <button class="button button-gold" type="button" data-open-quote>Gauti pasiūlymą <span>→</span></button>
-          <button class="video-link" type="button" data-scroll-target="#showroom"><span class="play">▶</span><span>Žiūrėti<br>sprendimus</span></button>
+          <a class="button button-gold" href="#story">Atrasti sprendimus <span aria-hidden="true">↓</span></a>
+          <button class="hero-quote" type="button" data-open-quote>Gauti pasiūlymą</button>
         </div>
       </div>
 
@@ -79,8 +80,7 @@
         <button class="hotspot hotspot-install" type="button" data-hotspot="sliding" style="--x:84%;--y:48%"><span class="hotspot-plus">+</span><span class="hotspot-label">Montavimas</span></button>
       </div>
 
-      <div class="hero-pagination" aria-hidden="true"><span class="active">01</span><span>02</span><span>03</span></div>
-      <div class="hero-signature" aria-hidden="true">Daugiau<br>nei langai</div>
+      <div class="hero-scroll" aria-hidden="true"><span>01 / 03</span><i></i><span>Slinkite žemyn</span></div>
 
       <div class="hero-products" data-hero-products aria-label="Produktų kategorijos"></div>
 
@@ -91,6 +91,27 @@
         <div class="trust-item"><span class="trust-icon">◒</span><div><strong>A+</strong><small>energinis efektyvumas</small></div></div>
         <div class="trust-item trust-wide"><span class="trust-icon">LT</span><div><strong>Visoje Lietuvoje</strong><small>montavimo paslaugos</small></div></div>
         <button class="trust-chat" type="button" data-open-quote><span>Turite klausimų?<small>Mes čia, kad padėtume.</small></span><b>•••</b></button>
+      </div>
+    </section>
+
+    <section class="story" id="story" aria-labelledby="story-title" data-story>
+      <div class="story-sticky">
+        <div class="story-image" aria-hidden="true"></div>
+        <div class="story-shade" aria-hidden="true"></div>
+        <div class="story-intro">
+          <p class="kicker">02 / ERDVĖ</p>
+          <h2 id="story-title">Namai prasideda<br><em>nuo šviesos.</em></h2>
+        </div>
+        <div class="story-detail">
+          <p class="kicker">SPRENDIMAI JŪSŲ NAMAMS</p>
+          <h2>Forma. Šviesa.<br><em>Komfortas.</em></h2>
+          <p>Parinkite langus ar duris ir peržiūrėkite galimus variantus.</p>
+          <div class="story-links">
+            <a href="#showroom" data-category-link="pvc">Langai <span aria-hidden="true">↗</span></a>
+            <a href="#showroom" data-category-link="doors">Durys <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="story-progress" aria-hidden="true"><span>02 / 03</span><i><b></b></i></div>
       </div>
     </section>
 

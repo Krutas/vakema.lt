@@ -134,10 +134,11 @@ document.addEventListener('click', event => {
 const hero = $('[data-hero]');
 const heroCamera = $('[data-hero-camera]');
 let targetX = 0, targetY = 0, currentX = 0, currentY = 0, raf = null;
+let heroScrollProgress = 0;
 function parallaxFrame(){
   currentX += (targetX - currentX) * 0.075;
   currentY += (targetY - currentY) * 0.075;
-  heroCamera.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) scale(1.06)`;
+  heroCamera.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) scale(${1.04 + heroScrollProgress * .16})`;
   if(Math.abs(targetX-currentX) > .08 || Math.abs(targetY-currentY) > .08) raf = requestAnimationFrame(parallaxFrame); else raf = null;
 }
 function queueParallax(){
@@ -190,6 +191,38 @@ if(!reduceMotion && coarsePointer && hero && heroCamera){
   }else{
     enableMobileParallax();
   }
+}
+
+const story = $('[data-story]');
+if(!reduceMotion && story && hero && heroCamera){
+  document.documentElement.classList.add('motion-ready');
+  let scrollQueued = false;
+  const updateStoryMotion = () => {
+    scrollQueued = false;
+    const heroRect = hero.getBoundingClientRect();
+    heroScrollProgress = clamp(-heroRect.top / Math.max(1, heroRect.height), 0, 1);
+    hero.style.setProperty('--hero-opacity', String(1 - clamp((heroScrollProgress - .12) / .66, 0, 1)));
+    queueParallax();
+
+    const rect = story.getBoundingClientRect();
+    const progress = clamp(-rect.top / Math.max(1, rect.height - window.innerHeight), 0, 1);
+    story.style.setProperty('--story-progress', String(progress));
+    story.style.setProperty('--story-scale', String(1 + progress * .22));
+    story.style.setProperty('--story-brightness', String(.62 + progress * .24));
+    story.style.setProperty('--story-intro-opacity', String(1 - clamp((progress - .16) / .22, 0, 1)));
+    story.style.setProperty('--story-detail-opacity', String(clamp((progress - .41) / .18, 0, 1)));
+    story.style.setProperty('--story-intro-y', `${-progress * 70}px`);
+    story.style.setProperty('--story-detail-y', `${(1 - progress) * 45}px`);
+    story.classList.toggle('detail-active', progress > .52);
+  };
+  const queueStoryMotion = () => {
+    if(scrollQueued) return;
+    scrollQueued = true;
+    requestAnimationFrame(updateStoryMotion);
+  };
+  window.addEventListener('scroll', queueStoryMotion, {passive:true});
+  window.addEventListener('resize', queueStoryMotion, {passive:true});
+  updateStoryMotion();
 }
 
 const header = $('[data-header]');
