@@ -4,10 +4,11 @@ import h2 from './assets/hero-chunk-2.js';
 import h3 from './assets/hero-chunk-3.js';
 import h4 from './assets/hero-chunk-4.js';
 import h5 from './assets/hero-chunk-5.js';
+import logoUrl from './assets/vakema-logo.png';
 
 const heroDataUrl='data:image/webp;base64,'+[h0,h1,h2,h3,h4,h5].join('');
 document.documentElement.style.setProperty('--hero-image',`url("${heroDataUrl}")`);
-document.querySelectorAll('[data-logo]').forEach(img=>{img.src='./assets/vakema-logo.png'});
+document.querySelectorAll('[data-logo]').forEach(img=>{img.src=logoUrl});
 
 const header=document.querySelector('[data-header]');
 const progress=document.querySelector('.page-progress span');
