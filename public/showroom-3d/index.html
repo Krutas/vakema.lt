@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="lt">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Vakema – langai ir durys moderniems namams</title>
+  <meta name="description" content="Langų ir durų keitimas bei montavimas. Skaitmeninis Vakema showroomas – pasirinkite sprendimą, mes pasirūpinsime visa kita." />
+  <meta name="theme-color" content="#07080A" />
+  <!-- Review build: keep out of search engines. Remove this line when the site goes live. -->
+  <meta name="robots" content="noindex, nofollow" />
+  <!-- Link previews (Messenger, Facebook, Slack). og:image must be an absolute URL:
+       change the domain if the preview is not hosted at vakema-preview.netlify.app. -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Vakema – patikimi sprendimai moderniems namams" />
+  <meta property="og:description" content="Langų ir durų keitimas bei montavimas. Skaitmeninis Vakema showroomas." />
+  <meta property="og:image" content="https://vakema-preview.netlify.app/assets/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="assets/vakema-mark.svg" type="image/svg+xml" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Michroma&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/",
+      "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.5/index.js"
+    }
+  }
+  </script>
+  <script>
+    // Safety net: if the 3D module can't load (blocked CDN, ad blocker, browser without
+    // import maps), show the 2D page instead of leaving the loader on screen.
+    window.__vakemaFail = function () {
+      if (!document.body) { document.addEventListener('DOMContentLoaded', window.__vakemaFail); return; }
+      var b = document.body;
+      if (window.__vakemaStarted || b.classList.contains('no-webgl')) return;
+      b.classList.remove('is-intro');
+      b.classList.add('no-webgl');
+      var loader = document.getElementById('loader');
+      if (loader) loader.remove();
+      document.getElementById('skip-btn').hidden = true;
+      var menu = document.getElementById('menu-btn'), links = document.getElementById('nav-links');
+      menu.addEventListener('click', function () {
+        var open = menu.getAttribute('aria-expanded') !== 'true';
+        menu.setAttribute('aria-expanded', String(open));
+        links.classList.toggle('is-open', open);
+      });
+    };
+    setTimeout(window.__vakemaFail, 10000);
+  </script>
+  <script type="module" src="js/main.js" onerror="window.__vakemaFail()"></script>
+</head>
+<body class="is-intro">
+  <a class="skip-link" href="#turinys">Pereiti prie turinio</a>
+
+  <canvas id="scene" aria-hidden="true"></canvas>
+  <div class="fx-vignette" aria-hidden="true"></div>
+  <div class="fx-grain" aria-hidden="true"></div>
+
+  <!-- Loader: brand beat shown while the 3D scene compiles -->
+  <div id="loader" aria-hidden="true">
+    <img class="loader-logo" src="assets/vakema-logo.jpg" alt="" />
+    <span class="loader-line"></span>
+  </div>
+
+  <!-- Glass navigation -->
+  <header class="nav reveal" id="nav">
+    <a class="brand" href="./" aria-label="Vakema – pagrindinis">
+      <svg class="mark" viewBox="-36 0 136 90" aria-hidden="true">
+        <defs>
+          <linearGradient id="g-gold" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#FFE7A3" /><stop offset=".45" stop-color="#F2C14E" /><stop offset="1" stop-color="#8A5A12" />
+          </linearGradient>
+          <linearGradient id="g-chrome" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#FFFFFF" /><stop offset=".5" stop-color="#C9CED4" /><stop offset="1" stop-color="#5C636B" />
+          </linearGradient>
+          <linearGradient id="g-line" x1="0" x2="1">
+            <stop offset="0" stop-color="#F2C14E" stop-opacity="0" /><stop offset="1" stop-color="#F2C14E" />
+          </linearGradient>
+        </defs>
+        <rect x="-34" y="18" width="44" height="2.6" fill="url(#g-line)" />
+        <rect x="-26" y="34" width="40" height="2.6" fill="url(#g-line)" />
+        <rect x="-30" y="50" width="48" height="2.6" fill="url(#g-line)" />
+        <path d="M80 4H98L64 80L58 70Z" fill="url(#g-chrome)" />
+        <path d="M2 4H30L60 74L52 86Z" fill="url(#g-gold)" />
+      </svg>
+      <span class="wordmark"><span><b class="wm-gold">VAKE</b><b class="wm-chrome">MA</b></span><small>LANGAI</small></span>
+    </a>
+
+    <nav aria-label="Pagrindinė navigacija">
+      <ul class="nav-links" id="nav-links">
+        <li><a href="./" aria-current="page">Showroomas</a></li>
+        <li><a href="#" data-soon>Langai</a></li>
+        <li><a href="#" data-soon>Durys</a></li>
+        <li><a href="#" data-soon>Montavimas</a></li>
+        <li><a href="#" data-soon>Mūsų darbai</a></li>
+        <li><a href="#" data-soon>Apie mus</a></li>
+        <li><a href="#" data-soon>Kontaktai</a></li>
+      </ul>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="lang" type="button" aria-label="Kalba: lietuvių">LT</button>
+      <a class="btn btn-gold nav-cta" href="#" data-soon="quote">Gauti pasiūlymą <span aria-hidden="true">→</span></a>
+      <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Meniu">
+        <span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="turinys" class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow reveal">Kokybė · Patikimumas · Jūsų ramybė</p>
+      <h1 class="reveal">Moderniems namams&nbsp;–<br /><span class="gold">patikimi sprendimai</span></h1>
+      <p class="lead reveal">Langų ir durų keitimas bei montavimas. Pasirinkite sprendimą – mes pasirūpinsime visa kita.</p>
+      <div class="cta-row reveal">
+        <a class="btn btn-gold" href="#" data-soon="quote">Gauti pasiūlymą <span aria-hidden="true">→</span></a>
+        <button class="btn btn-glass" type="button" id="tour-btn"><span class="play" aria-hidden="true"></span>Apžiūrėti showroomą</button>
+      </div>
+    </div>
+
+    <nav class="hero-chips reveal" aria-label="Kategorijos">
+      <button class="chip" type="button" data-focus="slide"><i>01</i>Langai</button>
+      <button class="chip" type="button" data-focus="entry"><i>02</i>Durys</button>
+      <a class="chip" href="#" data-soon><i>03</i>Montavimas</a>
+    </nav>
+
+    <!-- Accessible mirror of the 3D products (keyboard + screen readers) -->
+    <ul class="sr-only" id="product-list" aria-label="Showroomo gaminiai"></ul>
+  </main>
+
+  <div class="glass-label" id="label" hidden></div>
+  <button class="back-btn" id="back-btn" type="button" hidden>← Grįžti į showroomą</button>
+  <p class="hint" id="hint"><span class="mouse" aria-hidden="true"></span>Judinkite pelę – apsižvalgykite. Spustelėkite gaminį.</p>
+  <button class="skip-intro" id="skip-btn" type="button">Praleisti intro</button>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
