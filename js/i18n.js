@@ -39,7 +39,7 @@ const EN_HTML = {
   'contacts.contact': 'Phone or email',
   'contacts.message': 'Message',
   'contacts.send': 'Send enquiry <span aria-hidden="true">→</span>',
-  'contacts.map': 'Vakema showroom',
+  'contacts.map': 'Vakema head office',
   'contacts.note': 'Sample contact details for the presentation – they will be replaced with real ones.',
 };
 
