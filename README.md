@@ -6,6 +6,7 @@ furnished home showroom (windows wall left, doors wall right) set in a daylight 
 - Cursor-guided camera, glass navigation, clickable windows and doors
 - Langai / Durys wall views; the mouse wheel steps through the products
 - Animated Kontaktai panel (sample contact details – replace before launch)
+- Four-step "Gauti pasiūlymą" quote request (demo: nothing is sent yet – plan in [docs/getoffer.md](docs/getoffer.md))
 - LT / EN language switch (manual only)
 - Falls back to a 2D page if the 3D module can't load
 
@@ -32,5 +33,5 @@ Every push to `main` publishes the site to GitHub Pages
 
 - Remove the `noindex` meta in `index.html`
 - Update the absolute `og:image` URL if the domain changes
-- Replace the sample contact details and connect the quote / contact forms
+- Replace the sample contact details and connect the quote / contact forms (see docs/getoffer.md)
 - Remove the "Peržiūros versija" notice

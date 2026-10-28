@@ -110,7 +110,7 @@
         <button type="button" data-lang="lt" aria-pressed="true">LT</button>
         <button type="button" data-lang="en" aria-pressed="false">EN</button>
       </div>
-      <a class="btn btn-gold nav-cta" href="#" data-soon="quote" data-i18n="cta.quote">Gauti pasiūlymą <span aria-hidden="true">→</span></a>
+      <a class="btn btn-gold nav-cta" href="#pasiulymas" data-quote="" data-i18n="cta.quote">Gauti pasiūlymą <span aria-hidden="true">→</span></a>
       <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Meniu" data-i18n-attr="aria-label:a.menu">
         <span></span><span></span>
       </button>
@@ -123,7 +123,7 @@
       <h1 class="reveal" data-i18n="hero.title">Moderniems namams&nbsp;–<br /><span class="gold">patikimi sprendimai</span></h1>
       <p class="lead reveal" data-i18n="hero.lead">Langų ir durų keitimas bei montavimas. Pasirinkite sprendimą – mes pasirūpinsime visa kita.</p>
       <div class="cta-row reveal">
-        <a class="btn btn-gold" href="#" data-soon="quote" data-i18n="cta.quote">Gauti pasiūlymą <span aria-hidden="true">→</span></a>
+        <a class="btn btn-gold" href="#pasiulymas" data-quote="" data-i18n="cta.quote">Gauti pasiūlymą <span aria-hidden="true">→</span></a>
       </div>
     </div>
 
@@ -146,15 +146,15 @@
   </div>
 
   <!-- Contacts: opens as a glass panel over the showroom. Sample details for the presentation. -->
-  <section class="contacts" id="kontaktai" role="dialog" aria-modal="true" aria-labelledby="contacts-title" hidden>
-    <div class="contacts-backdrop" data-close></div>
-    <div class="contacts-panel">
-      <button class="contacts-close" type="button" data-close aria-label="Uždaryti kontaktus" data-i18n-attr="aria-label:a.closeContacts">×</button>
-      <div class="contacts-inner">
-        <header class="contacts-head">
+  <section class="sheet contacts" id="kontaktai" role="dialog" aria-modal="true" aria-labelledby="contacts-title" hidden>
+    <div class="sheet-backdrop" data-close></div>
+    <div class="sheet-panel">
+      <button class="sheet-close" type="button" data-close aria-label="Uždaryti kontaktus" data-i18n-attr="aria-label:a.closeContacts">×</button>
+      <div class="sheet-inner">
+        <header class="sheet-head">
           <p class="eyebrow" data-anim style="--i:0" data-i18n="contacts.eyebrow">Kontaktai</p>
           <h2 id="contacts-title" data-anim style="--i:1" data-i18n="contacts.title">Susisiekime</h2>
-          <svg class="contacts-rule" viewBox="0 0 240 4" aria-hidden="true"><line x1="0" y1="2" x2="240" y2="2" /></svg>
+          <svg class="sheet-rule" viewBox="0 0 240 4" aria-hidden="true"><line x1="0" y1="2" x2="240" y2="2" /></svg>
           <p class="lead" data-anim style="--i:2" data-i18n="contacts.lead">Užsukite į saloną arba palikite žinutę – atsakysime per vieną darbo dieną.</p>
         </header>
 
@@ -207,7 +207,184 @@
           </div>
         </div>
 
-        <p class="contacts-note" data-anim style="--i:8" data-i18n="contacts.note">Pavyzdiniai kontaktai pristatymui – bus pakeisti tikrais.</p>
+        <p class="sheet-note" data-anim style="--i:8" data-i18n="contacts.note">Pavyzdiniai kontaktai pristatymui – bus pakeisti tikrais.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quote request: four steps + live summary. Demo build – nothing is sent (see getoffer.md). -->
+  <section class="sheet quote" id="pasiulymas" role="dialog" aria-modal="true" aria-labelledby="quote-title" hidden>
+    <div class="sheet-backdrop" data-close></div>
+    <div class="sheet-panel">
+      <button class="sheet-close" type="button" data-close aria-label="Uždaryti" data-i18n-attr="aria-label:a.close">×</button>
+      <div class="sheet-inner">
+        <header class="sheet-head">
+          <p class="eyebrow" data-anim style="--i:0" data-i18n="quote.eyebrow">Gauti pasiūlymą</p>
+          <h2 id="quote-title" data-anim style="--i:1" data-i18n="quote.title">Jūsų projektas – mūsų pasiūlymas</h2>
+          <svg class="sheet-rule" viewBox="0 0 240 4" aria-hidden="true"><line x1="0" y1="2" x2="240" y2="2" /></svg>
+          <p class="lead" data-anim style="--i:2" data-i18n="quote.lead">Keli žingsniai – ir per vieną darbo dieną paruošime preliminarų pasiūlymą bei suderinsime nemokamą matavimą.</p>
+        </header>
+
+        <ol class="quote-steps" data-anim style="--i:3">
+          <li aria-current="step"><b>1</b><span data-i18n="quote.step1">Projektas</span></li>
+          <li><b>2</b><span data-i18n="quote.step2">Gaminiai</span></li>
+          <li><b>3</b><span data-i18n="quote.step3">Objektas</span></li>
+          <li><b>4</b><span data-i18n="quote.step4">Kontaktai</span></li>
+        </ol>
+
+        <div class="quote-layout">
+          <form class="quote-form" novalidate data-anim style="--i:4">
+            <!-- 1 · Project -->
+            <fieldset class="quote-step">
+              <legend data-i18n="quote.s1.title">Ko jums reikia?</legend>
+              <div class="choice-group" data-name="scope">
+                <p class="q-label" data-i18n="quote.scope">Gaminiai</p>
+                <div class="choice">
+                  <label><input type="radio" name="scope" value="windows" /><span data-i18n="quote.scope.windows">Langai</span></label>
+                  <label><input type="radio" name="scope" value="doors" /><span data-i18n="quote.scope.doors">Durys</span></label>
+                  <label><input type="radio" name="scope" value="both" /><span data-i18n="quote.scope.both">Langai ir durys</span></label>
+                </div>
+              </div>
+              <div class="choice-group" data-name="work">
+                <p class="q-label" data-i18n="quote.work">Darbų pobūdis</p>
+                <div class="choice">
+                  <label><input type="radio" name="work" value="replace" checked /><span data-i18n="quote.work.replace">Senų keitimas</span></label>
+                  <label><input type="radio" name="work" value="new" /><span data-i18n="quote.work.new">Naujas objektas</span></label>
+                </div>
+              </div>
+              <div class="choice-group" data-name="install">
+                <p class="q-label" data-i18n="quote.install">Montavimas</p>
+                <div class="choice">
+                  <label><input type="radio" name="install" value="yes" checked /><span data-i18n="quote.install.yes">Su montavimu</span></label>
+                  <label><input type="radio" name="install" value="no" /><span data-i18n="quote.install.no">Tik gaminiai</span></label>
+                </div>
+              </div>
+              <label class="check" data-show-if="work=replace"><input type="checkbox" name="removal" checked /><span data-i18n="quote.removal">Senų gaminių išmontavimas ir utilizavimas</span></label>
+            </fieldset>
+
+            <!-- 2 · Products -->
+            <fieldset class="quote-step" hidden>
+              <legend data-i18n="quote.s2.title">Kokių gaminių ir kiek?</legend>
+              <div class="quote-items" id="quote-items"></div>
+              <button class="btn btn-glass btn-add" type="button" data-add-item data-i18n="quote.addItem">+ Pridėti gaminį</button>
+              <label class="check"><input type="checkbox" name="unknownSize" /><span data-i18n="quote.unknownSize">Tikslių matmenų nežinau – reikalingas matavimas</span></label>
+              <div class="choice-group" data-name="profile">
+                <p class="q-label" data-i18n="quote.profile">Profilis</p>
+                <div class="choice">
+                  <label><input type="radio" name="profile" value="pvc" /><span>PVC</span></label>
+                  <label><input type="radio" name="profile" value="aluminium" /><span data-i18n="quote.profile.alu">Aliuminis</span></label>
+                  <label><input type="radio" name="profile" value="wood" /><span data-i18n="quote.profile.wood">Mediena</span></label>
+                  <label><input type="radio" name="profile" value="advise" checked /><span data-i18n="quote.advise">Patarkite</span></label>
+                </div>
+              </div>
+              <div class="choice-group" data-name="glazing">
+                <p class="q-label" data-i18n="quote.glazing">Stiklo paketas</p>
+                <div class="choice">
+                  <label><input type="radio" name="glazing" value="double" /><span data-i18n="quote.glazing.double">Dvigubas</span></label>
+                  <label><input type="radio" name="glazing" value="triple" /><span data-i18n="quote.glazing.triple">Trigubas</span></label>
+                  <label><input type="radio" name="glazing" value="advise" checked /><span data-i18n="quote.advise">Patarkite</span></label>
+                </div>
+              </div>
+              <div class="choice-group" data-name="color">
+                <p class="q-label" data-i18n="quote.color">Spalva</p>
+                <div class="choice">
+                  <label><input type="radio" name="color" value="white" /><span data-i18n="quote.color.white">Balta</span></label>
+                  <label><input type="radio" name="color" value="anthracite" /><span data-i18n="quote.color.anthracite">Antracitas</span></label>
+                  <label><input type="radio" name="color" value="wood" /><span data-i18n="quote.color.wood">Medžio imitacija</span></label>
+                  <label><input type="radio" name="color" value="advise" checked /><span data-i18n="quote.advise">Patarkite</span></label>
+                </div>
+              </div>
+              <!-- Manufacturer list comes from the admin later; hidden while empty -->
+              <div class="choice-group" data-name="manufacturer" hidden>
+                <p class="q-label" data-i18n="quote.manufacturer">Gamintojas</p>
+                <div class="choice" id="quote-manufacturers"></div>
+              </div>
+            </fieldset>
+
+            <!-- 3 · Property -->
+            <fieldset class="quote-step" hidden>
+              <legend data-i18n="quote.s3.title">Kur atliksime darbus?</legend>
+              <div class="choice-group" data-name="property">
+                <p class="q-label" data-i18n="quote.property">Objektas</p>
+                <div class="choice">
+                  <label><input type="radio" name="property" value="house" checked /><span data-i18n="quote.property.house">Namas</span></label>
+                  <label><input type="radio" name="property" value="apartment" /><span data-i18n="quote.property.apartment">Butas</span></label>
+                  <label><input type="radio" name="property" value="commercial" /><span data-i18n="quote.property.commercial">Komercinės patalpos</span></label>
+                </div>
+              </div>
+              <div class="field-row">
+                <label><span data-i18n="quote.city">Miestas ar rajonas *</span><input type="text" name="city" autocomplete="address-level2" /></label>
+                <label><span data-i18n="quote.address">Adresas (nebūtina)</span><input type="text" name="address" autocomplete="street-address" /></label>
+              </div>
+              <div class="choice-group" data-name="timing">
+                <p class="q-label" data-i18n="quote.timing">Kada planuojate?</p>
+                <div class="choice">
+                  <label><input type="radio" name="timing" value="asap" /><span data-i18n="quote.timing.asap">Kuo greičiau</span></label>
+                  <label><input type="radio" name="timing" value="1m" /><span data-i18n="quote.timing.1m">Per mėnesį</span></label>
+                  <label><input type="radio" name="timing" value="1-3m" checked /><span data-i18n="quote.timing.3m">Per 1–3 mėn.</span></label>
+                  <label><input type="radio" name="timing" value="planning" /><span data-i18n="quote.timing.planning">Dar planuoju</span></label>
+                </div>
+              </div>
+              <label class="file"><span data-i18n="quote.photos">Esamų langų ar angų nuotraukos (nebūtina, iki 5)</span><input type="file" name="photos" accept="image/jpeg,image/png,image/heic,image/webp" multiple /></label>
+              <div class="quote-thumbs" id="quote-thumbs"></div>
+              <label><span data-i18n="quote.comment">Komentaras</span><textarea name="comment" rows="3" data-i18n-attr="placeholder:a.quoteCommentPh" placeholder="Pvz. antras aukštas, reikia ir palangių"></textarea></label>
+            </fieldset>
+
+            <!-- 4 · Contact -->
+            <fieldset class="quote-step" hidden>
+              <legend data-i18n="quote.s4.title">Kaip su jumis susisiekti?</legend>
+              <div class="field-row">
+                <label><span data-i18n="quote.name">Vardas *</span><input type="text" name="name" autocomplete="name" /></label>
+                <label><span data-i18n="quote.phone">Telefonas *</span><input type="tel" name="phone" autocomplete="tel" placeholder="+370" /></label>
+              </div>
+              <label><span data-i18n="quote.email">El. paštas *</span><input type="email" name="email" autocomplete="email" /></label>
+              <div class="choice-group" data-name="channel">
+                <p class="q-label" data-i18n="quote.channel">Kaip patogiau?</p>
+                <div class="choice">
+                  <label><input type="radio" name="channel" value="phone" checked /><span data-i18n="quote.channel.phone">Paskambinkite</span></label>
+                  <label><input type="radio" name="channel" value="email" /><span data-i18n="quote.channel.email">Parašykite el. paštu</span></label>
+                </div>
+              </div>
+              <label class="check"><input type="checkbox" name="consent" /><span data-i18n="quote.consent">Sutinku, kad mano duomenys būtų tvarkomi pasiūlymui parengti, kaip aprašyta privatumo politikoje. *</span></label>
+              <label class="check"><input type="checkbox" name="marketing" /><span data-i18n="quote.marketing">Noriu gauti pasiūlymų ir naujienų (nebūtina)</span></label>
+              <!-- spam trap: real visitors never see or fill this -->
+              <label class="hp" aria-hidden="true">Company<input type="text" name="company" tabindex="-1" autocomplete="off" /></label>
+            </fieldset>
+
+            <div class="quote-nav">
+              <button class="btn btn-glass" type="button" data-prev hidden data-i18n="quote.prev">← Atgal</button>
+              <button class="btn btn-gold" type="button" data-next data-i18n="quote.next">Toliau →</button>
+              <button class="btn btn-gold" type="submit" data-submit hidden data-i18n="quote.submit">Siųsti užklausą →</button>
+            </div>
+          </form>
+
+          <aside class="quote-summary" data-anim style="--i:5" aria-live="polite">
+            <h3 data-i18n="quote.summary">Jūsų užklausa</h3>
+            <dl id="quote-summary"></dl>
+            <ul class="quote-trust">
+              <li data-i18n="quote.trust1">Nemokamas matavimas</li>
+              <li data-i18n="quote.trust2">Atsakymas per 1 darbo dieną</li>
+              <li data-i18n="quote.trust3">Jokių įsipareigojimų</li>
+            </ul>
+          </aside>
+        </div>
+
+        <div class="quote-done" hidden>
+          <svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24" /><path d="m15 27 7 7 15-16" /></svg>
+          <h3 data-i18n="quote.done.title">Ačiū! Užklausa gauta.</h3>
+          <p class="quote-ref" id="quote-ref"></p>
+          <ol class="quote-next">
+            <li data-i18n="quote.done.1">Per vieną darbo dieną susisieksime ir patikslinsime detales.</li>
+            <li data-i18n="quote.done.2">Suderinsime nemokamą matavimą objekte.</li>
+            <li data-i18n="quote.done.3">Atsiųsime tikslų pasiūlymą su kaina ir terminais.</li>
+          </ol>
+          <div class="quote-done-actions">
+            <button class="btn btn-gold" type="button" data-close data-i18n="quote.done.back">Grįžti į showroomą</button>
+            <button class="btn btn-glass" type="button" data-restart data-i18n="quote.done.again">Nauja užklausa</button>
+          </div>
+        </div>
+
+        <p class="sheet-note" data-i18n="quote.demo">Demonstracinė versija: užklausa niekur nesiunčiama ir nesaugoma.</p>
       </div>
     </div>
   </section>

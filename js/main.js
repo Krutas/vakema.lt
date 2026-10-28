@@ -5,9 +5,10 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
-import { buildWorld } from './scene.js';
+import { buildWorld, PRODUCTS } from './scene.js';
 import { createIntro } from './intro.js';
 import { initI18n, onLangChange, t } from './i18n.js';
+import { initQuote } from './quote.js';
 
 const $ = (s) => document.querySelector(s);
 const body = document.body;
@@ -68,68 +69,92 @@ function initChrome() {
     try { sessionStorage.setItem('vakema:dev-banner', 'hidden'); } catch { /* storage blocked */ }
   });
 
-  // Contacts panel: a glass page that grows out of the "Kontaktai" link
-  const contacts = $('#kontaktai');
+  // Sheets: glass pages that grow out of the link or button that opened them
   const homeLink = links.querySelector('a[href="./"]');
+  let activeSheet = null;
+  function createSheet(section, { hash, navLink = null }) {
+    let opener = null;
+    const isOpen = () => section.classList.contains('is-open');
+    const sheet = { section, isOpen, open, close };
+    function open(from) {
+      if (isOpen()) return;
+      activeSheet?.close(false);
+      opener = from;
+      const r = from.getBoundingClientRect();
+      section.style.setProperty('--ox', `${r.left + r.width / 2}px`);
+      section.style.setProperty('--oy', `${r.top + r.height / 2}px`);
+      section.hidden = false;
+      section.getBoundingClientRect(); // commit the closed state so the opening animates
+      section.classList.add('is-open');
+      body.classList.add('sheet-open');
+      menuBtn.setAttribute('aria-expanded', 'false');
+      links.classList.remove('is-open');
+      if (navLink) { homeLink.removeAttribute('aria-current'); navLink.setAttribute('aria-current', 'page'); }
+      history.replaceState(null, '', hash);
+      activeSheet = sheet;
+      setTimeout(() => section.querySelector('.sheet-close').focus({ preventScroll: true }), 450);
+    }
+    function close(restoreFocus = true) {
+      if (!isOpen()) return;
+      section.classList.remove('is-open');
+      body.classList.remove('sheet-open');
+      if (navLink) { navLink.removeAttribute('aria-current'); homeLink.setAttribute('aria-current', 'page'); }
+      history.replaceState(null, '', location.pathname + location.search);
+      if (activeSheet === sheet) activeSheet = null;
+      setTimeout(() => { if (!isOpen()) section.hidden = true; }, 900);
+      if (restoreFocus) opener?.focus({ preventScroll: true });
+    }
+    section.querySelectorAll('[data-close]').forEach((el) => el.addEventListener('click', () => close()));
+    return sheet;
+  }
+
+  // Kontaktai
   const contactsLink = links.querySelector('[data-contacts]');
-  let contactsOpener = null;
-  const focusables = () => [...contacts.querySelectorAll('button, a[href], input, textarea')];
-  function openContacts(from) {
-    if (contacts.classList.contains('is-open')) return;
-    contactsOpener = from;
-    const r = from.getBoundingClientRect();
-    contacts.style.setProperty('--ox', `${r.left + r.width / 2}px`);
-    contacts.style.setProperty('--oy', `${r.top + r.height / 2}px`);
-    contacts.hidden = false;
-    contacts.getBoundingClientRect(); // commit the closed state so the opening animates
-    contacts.classList.add('is-open');
-    body.classList.add('contacts-open');
-    menuBtn.setAttribute('aria-expanded', 'false');
-    links.classList.remove('is-open');
-    homeLink.removeAttribute('aria-current');
-    contactsLink.setAttribute('aria-current', 'page');
-    history.replaceState(null, '', '#kontaktai');
-    setTimeout(() => contacts.querySelector('.contacts-close').focus({ preventScroll: true }), 450);
-  }
-  function closeContacts() {
-    if (!contacts.classList.contains('is-open')) return;
-    contacts.classList.remove('is-open');
-    body.classList.remove('contacts-open');
-    contactsLink.removeAttribute('aria-current');
-    homeLink.setAttribute('aria-current', 'page');
-    history.replaceState(null, '', location.pathname + location.search);
-    setTimeout(() => { if (!contacts.classList.contains('is-open')) contacts.hidden = true; }, 900);
-    contactsOpener?.focus({ preventScroll: true });
-  }
+  const contacts = createSheet($('#kontaktai'), { hash: '#kontaktai', navLink: contactsLink });
   document.querySelectorAll('[data-contacts]').forEach((a) => a.addEventListener('click', (e) => {
     e.preventDefault();
-    openContacts(a);
+    contacts.open(a);
   }));
-  contacts.querySelectorAll('[data-close]').forEach((el) => el.addEventListener('click', closeContacts));
-  contacts.querySelector('form').addEventListener('submit', (e) => {
+  $('#kontaktai form').addEventListener('submit', (e) => {
     e.preventDefault();
     toast(t('toast.sent'));
   });
-  // Capture phase, so Escape closes the panel before the showroom handles it
+
+  // Gauti pasiūlymą: any [data-quote] button opens it; a product card pre-fills that product
+  const quoteSheet = createSheet($('#pasiulymas'), { hash: '#pasiulymas' });
+  const quote = initQuote($('#pasiulymas'), { products: PRODUCTS, t, onLangChange });
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-quote]');
+    if (!btn) return;
+    e.preventDefault();
+    const product = btn.dataset.quote;
+    quote.setEntry(product ? `product:${product}` : btn.closest('.nav') ? 'nav' : 'hero');
+    if (product) quote.addProduct(product);
+    quoteSheet.open(btn);
+  });
+
+  // Capture phase, so Escape closes the sheet before the showroom handles it
   addEventListener('keydown', (e) => {
-    if (!contacts.classList.contains('is-open')) return;
+    if (!activeSheet) return;
     if (e.key === 'Escape') {
       e.stopPropagation();
-      closeContacts();
+      activeSheet.close();
     } else if (e.key === 'Tab') {
-      const f = focusables();
+      const f = [...activeSheet.section.querySelectorAll('button, a[href], input, select, textarea')]
+        .filter((el) => !el.disabled && !el.closest('[hidden], .hp'));
       const i = f.indexOf(document.activeElement);
       if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
       else if (!e.shiftKey && i === f.length - 1) { e.preventDefault(); f[0].focus(); }
     }
   }, true);
-  if (location.hash === '#kontaktai') openContacts(contactsLink);
+  if (location.hash === '#kontaktai') contacts.open(contactsLink);
+  if (location.hash === '#pasiulymas') quoteSheet.open($('.nav-cta'));
 
   document.addEventListener('click', (e) => {
     const soon = e.target.closest('[data-soon]');
     if (!soon) return;
     e.preventDefault();
-    toast(t(soon.dataset.soon === 'quote' ? 'toast.quote' : 'toast.soon'));
+    toast(t('toast.soon'));
   });
 }
 
@@ -260,7 +285,7 @@ async function start() {
       ${isFocus
         ? `<p>${t('label.text')}</p>
            <div class="label-actions">
-             <a class="btn btn-gold" href="#" data-soon="quote">${t('label.quote')}</a>
+             <a class="btn btn-gold" href="#pasiulymas" data-quote="${p.spec.id}">${t('label.quote')}</a>
              <a class="btn btn-glass" href="#" data-soon>${t('label.configure')} <em class="soon">${t('soon')}</em></a>
            </div>`
         : `<p>${t('label.hover')}</p>`}`;
@@ -432,7 +457,7 @@ async function start() {
   let wheelLock = 0;
   addEventListener('wheel', (e) => {
     if (mode === 'intro') { skipIntro(); return; }
-    if (body.classList.contains('contacts-open') || Math.abs(e.deltaY) < 2) return;
+    if (body.classList.contains('sheet-open') || Math.abs(e.deltaY) < 2) return;
     const now = performance.now();
     const fresh = now - lastWheel > 300;
     lastWheel = now;
