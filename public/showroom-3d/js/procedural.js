@@ -69,7 +69,7 @@ function sash(parent, mats, out, glassList, x0, y0, x1, y1, z, opt = {}) {
 }
 
 /**
- * @param {{type:'tilt'|'slide'|'fixed'|'door'|'patio', w:number, h:number}} spec
+ * @param {{type:'tilt'|'slide'|'fixed'|'door'|'patio'|'french', w:number, h:number}} spec
  * @returns product parts + intro/open motion definitions
  */
 export function buildProduct(spec, mats) {
@@ -82,7 +82,7 @@ export function buildProduct(spec, mats) {
   const glass = [];
   const sashes = []; // { obj, key, closed, from, open }
 
-  const isDoor = type === 'door' || type === 'patio';
+  const isDoor = type === 'door' || type === 'patio' || type === 'french';
   const f = isDoor ? 0.08 : 0.07;
   const d = isDoor ? 0.16 : 0.14;
   const X0 = -w / 2 + f, X1 = w / 2 - f;
@@ -144,6 +144,18 @@ export function buildProduct(spec, mats) {
       const T = sash(body, mats, out, glass, X0, yT + m / 2, X1, Y1, 0, { pivot: 'bottom' });
       handle(T.children[0], mats.gold, 0, Y1 - 0.065 / 2, 0.0375, 'lever');
       sashes.push({ obj: T.rotation, key: 'x', closed: 0, from: 0.65, open: 0.22 });
+      break;
+    }
+    case 'french': {
+      // Double glazed doors hinged at the outer sides, opening into the room
+      const mid = (X0 + X1) / 2;
+      const opt = { profile: 0.085, depth: 0.08, handleY: 1.05 };
+      const L = sash(body, mats, out, glass, X0, Y0, mid, Y1, 0, { ...opt, pivot: 'left', handle: 'right' });
+      const R = sash(body, mats, out, glass, mid, Y0, X1, Y1, 0, { ...opt, pivot: 'right', handle: 'left' });
+      sashes.push(
+        { obj: L.rotation, key: 'y', closed: 0, from: -1.2, open: -0.75 },
+        { obj: R.rotation, key: 'y', closed: 0, from: 1.2, open: 0.75 },
+      );
       break;
     }
     case 'door': {

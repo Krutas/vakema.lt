@@ -1,7 +1,9 @@
 # Vakema 3D showroom – hero (review build)
 
-Standalone cinematic hero: wireframe showroom assembles around a figure, cursor-guided camera,
-glass navigation, clickable windows/doors. Plan and brief: [docs/3d-showroom](../../docs/3d-showroom/).
+Standalone cinematic hero: a gold wireframe assembles a V-shaped, furnished home showroom (windows
+wall left, doors wall right) set in a daylight garden. Cursor-guided camera, glass navigation,
+clickable windows/doors, Langai/Durys wall views, mouse-wheel stepping through the products,
+an animated Kontaktai panel (sample contact details) and an LT/EN switch. Plan and brief: [docs/3d-showroom](../../docs/3d-showroom/).
 
 - Static files only (Three.js 0.165 + GSAP 3.12 from jsDelivr, fonts from Google Fonts).
 - Vite copies `public/` as-is, so a build serves this at `/showroom-3d/` (keep the trailing slash).

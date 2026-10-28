@@ -135,11 +135,13 @@ a { color: inherit; }
 }
 .nav-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
 .nav > nav { flex: 1; min-width: 0; }
-.lang {
-  height: 40px; padding: 0 12px; border-radius: 10px; background: transparent;
-  border: 1px solid var(--glass-border); font-size: 13px; font-weight: 600; letter-spacing: .08em; color: var(--text-muted);
+.lang { display: flex; height: 40px; padding: 3px; gap: 2px; border-radius: 10px; border: 1px solid var(--glass-border); }
+.lang button {
+  padding: 0 9px; border: 0; border-radius: 7px; background: transparent;
+  font-size: 12px; font-weight: 700; letter-spacing: .08em; color: var(--text-muted); transition: color .2s, background .2s;
 }
-.lang:hover { color: var(--text-primary); }
+.lang button:hover { color: var(--text-primary); }
+.lang button[aria-pressed="true"] { color: #1a1205; background: linear-gradient(180deg, var(--gold-100), var(--gold-300)); }
 .menu-btn { display: none; width: 44px; height: 44px; border-radius: 12px; background: transparent; border: 1px solid var(--glass-border); position: relative; }
 .menu-btn span { position: absolute; left: 13px; right: 13px; height: 1.5px; background: var(--text-primary); transition: transform .3s; }
 .menu-btn span:first-child { top: 17px; } .menu-btn span:last-child { top: 25px; }
@@ -168,17 +170,17 @@ a { color: inherit; }
   backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
 }
 .btn-glass:hover { background: rgba(255, 255, 255, .12); }
-.play {
-  width: 0; height: 0; border-left: 8px solid var(--gold-300);
-  border-top: 5px solid transparent; border-bottom: 5px solid transparent;
-}
 
 /* ---------- Hero copy ---------- */
 .hero { position: fixed; inset: 0; z-index: 10; pointer-events: none; }
 .hero-copy {
   position: absolute; left: var(--gutter); bottom: clamp(88px, 13vh, 150px);
-  max-width: 780px; pointer-events: auto;
+  max-width: 780px; pointer-events: none;
 }
+/* Only the controls catch clicks: the text itself lets clicks through to the 3D products behind it */
+.hero-copy a, .hero-copy button, .hero-chips a, .hero-chips button { pointer-events: auto; }
+/* Hovering a product behind the copy fades the copy so the product stays visible */
+body.has-hover .hero-copy { opacity: .12; }
 .eyebrow {
   display: flex; align-items: center; gap: 14px;
   font-family: var(--font-display); font-size: 11px; letter-spacing: .3em; text-transform: uppercase; color: var(--gold-300);
@@ -194,7 +196,7 @@ h1 {
 
 .hero-chips {
   position: absolute; right: var(--gutter); bottom: clamp(88px, 13vh, 150px);
-  display: flex; flex-direction: column; gap: 8px; pointer-events: auto;
+  display: flex; flex-direction: column; gap: 8px; pointer-events: none;
 }
 .chip {
   display: flex; align-items: center; gap: 14px; min-width: 190px; min-height: 48px; padding: 0 18px;
@@ -205,6 +207,119 @@ h1 {
 }
 .chip i { font-style: normal; font-family: var(--font-display); font-size: 10px; letter-spacing: .1em; color: var(--gold-300); }
 .chip:hover { border-color: rgba(242, 193, 78, .5); background: rgba(255, 255, 255, .1); transform: translateX(-4px); }
+.chip.is-active { border-color: var(--gold-300); background: rgba(242, 193, 78, .14); }
+/* Wall view: the headline steps aside so the whole wall is visible; the chips stay to switch walls */
+body.is-wall .hero-copy { opacity: 0; transform: translateY(12px); transition-delay: 0s; }
+body.is-wall .hero-copy * { pointer-events: none; }
+
+/* ---------- Contacts panel ---------- */
+.contacts { position: fixed; inset: 0; z-index: 28; }
+.contacts[hidden] { display: none; }
+.contacts-backdrop { position: absolute; inset: 0; background: rgba(4, 5, 7, .45); opacity: 0; transition: opacity .6s var(--ease-out); }
+.contacts-panel {
+  position: absolute; inset: 0; overflow-y: auto; overscroll-behavior: contain;
+  background: radial-gradient(1100px 560px at 85% 0%, rgba(242, 193, 78, .11), transparent 60%), rgba(9, 10, 13, .82);
+  backdrop-filter: blur(26px) saturate(130%); -webkit-backdrop-filter: blur(26px) saturate(130%);
+  /* opens as a circle growing out of the "Kontaktai" link (--ox/--oy set in JS) */
+  clip-path: circle(0px at var(--ox, 90%) var(--oy, 40px));
+  transition: clip-path .9s cubic-bezier(.7, 0, .2, 1);
+}
+.contacts.is-open .contacts-backdrop { opacity: 1; }
+.contacts.is-open .contacts-panel { clip-path: circle(150vmax at var(--ox, 90%) var(--oy, 40px)); }
+.contacts [data-anim] { opacity: 0; transform: translateY(26px); transition: opacity .6s var(--ease-out), transform .8s var(--ease-out); }
+.contacts.is-open [data-anim] { opacity: 1; transform: none; transition-delay: calc(.35s + var(--i) * 70ms); }
+.contacts-rule { display: block; width: 240px; height: 4px; margin-bottom: 18px; }
+.contacts-rule line { stroke: var(--gold-300); stroke-width: 2; stroke-dasharray: 240; stroke-dashoffset: 240; transition: stroke-dashoffset 1.1s var(--ease-out); }
+.contacts.is-open .contacts-rule line { stroke-dashoffset: 0; transition-delay: .55s; }
+.contacts-close {
+  position: fixed; z-index: 2; top: 100px; right: var(--gutter); width: 48px; height: 48px; border-radius: 50%;
+  border: 1px solid var(--glass-border); background: rgba(255, 255, 255, .06); color: var(--text-primary);
+  font-size: 24px; line-height: 1; opacity: 0; transform: rotate(-90deg) scale(.6);
+  transition: opacity .4s, transform .6s var(--ease-out), background .2s;
+}
+.contacts.is-open .contacts-close { opacity: 1; transform: none; transition-delay: .5s; }
+.contacts-close:hover { background: rgba(255, 255, 255, .14); }
+.contacts-inner { max-width: 1180px; margin: 0 auto; padding: 128px var(--gutter) 56px; }
+.contacts-head h2 { margin: 16px 0 14px; font-family: var(--font-display); font-weight: 400; font-size: clamp(30px, 4vw, 56px); line-height: 1.1; }
+.contacts-grid {
+  display: grid; grid-template-columns: 1.1fr 1fr; grid-template-areas: "cards form" "map form";
+  gap: 20px; margin-top: 36px;
+}
+.contact-cards { grid-area: cards; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 0; padding: 0; list-style: none; }
+.contact-card {
+  display: flex; flex-direction: column; gap: 6px; padding: 20px; border-radius: 16px;
+  border: 1px solid var(--glass-border); background: linear-gradient(180deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .03));
+  transition: border-color .3s;
+}
+.contact-card:hover { border-color: rgba(242, 193, 78, .45); }
+.contact-card svg { width: 26px; height: 26px; margin-bottom: 8px; fill: none; stroke: var(--gold-300); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.contact-card span { font-family: var(--font-display); font-size: 9.5px; letter-spacing: .26em; text-transform: uppercase; color: var(--text-muted); }
+.contact-card a, .contact-card p { margin: 0; font-size: 17px; font-weight: 600; line-height: 1.45; color: var(--text-primary); text-decoration: none; }
+.contact-card a:hover { color: var(--gold-300); }
+.contact-form {
+  grid-area: form; display: flex; flex-direction: column; gap: 14px; padding: 26px; border-radius: 18px;
+  border: 1px solid var(--glass-border); background: rgba(255, 255, 255, .05);
+}
+.contact-form h3 { margin: 0 0 4px; font-size: 20px; }
+.contact-form label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--text-muted); }
+.contact-form input, .contact-form textarea {
+  padding: 12px 14px; border-radius: 12px; border: 1px solid var(--glass-border); background: rgba(0, 0, 0, .25);
+  font: inherit; font-size: 15px; color: var(--text-primary); resize: vertical; transition: border-color .2s, box-shadow .2s;
+}
+.contact-form input:focus, .contact-form textarea:focus { outline: none; border-color: var(--gold-300); box-shadow: 0 0 0 3px rgba(242, 193, 78, .18); }
+.contact-form textarea::placeholder { color: #5f6773; }
+.contact-form .btn { align-self: flex-start; margin-top: 6px; }
+.contact-map { grid-area: map; position: relative; min-height: 200px; border-radius: 18px; overflow: hidden; border: 1px solid var(--glass-border); background: #0d0f13; }
+.contact-map svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.map-road { fill: none; stroke: #2a2f37; stroke-width: 6; stroke-linecap: round; }
+.map-road.major { stroke: #3a414b; stroke-width: 10; }
+.map-river { fill: none; stroke: #1b3346; stroke-width: 16; }
+.map-pin { fill: var(--gold-300); }
+.map-pulse { fill: none; stroke: var(--gold-300); stroke-width: 2; transform-origin: 232px 104px; animation: map-pulse 2.2s var(--ease-out) infinite; }
+@keyframes map-pulse { from { transform: scale(.4); opacity: .9; } to { transform: scale(3); opacity: 0; } }
+.map-label { position: absolute; left: 16px; bottom: 14px; font-family: var(--font-display); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold-300); }
+.contacts-note { margin-top: 26px; font-size: 12.5px; color: var(--text-muted); }
+body.contacts-open .hero-copy, body.contacts-open .hero-chips, body.contacts-open .hint { opacity: 0; pointer-events: none; }
+@media (max-width: 900px) {
+  .contacts-grid { grid-template-columns: 1fr; grid-template-areas: "cards" "form" "map"; }
+}
+@media (max-width: 560px) {
+  .contact-cards { grid-template-columns: 1fr; }
+  .contacts-inner { padding-top: 104px; }
+  .contacts-close { top: 92px; width: 42px; height: 42px; }
+}
+
+/* ---------- "Under development" notice ---------- */
+.dev-banner {
+  position: fixed; z-index: 25; top: 92px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 10px; max-width: calc(100vw - 32px);
+  padding: 6px 6px 6px 14px; border-radius: 999px; border: 1px solid rgba(242, 193, 78, .35);
+  background: rgba(16, 17, 21, .62); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  font-size: 12.5px; color: var(--text-muted); white-space: nowrap;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+}
+.is-intro .dev-banner.reveal { transform: translate(-50%, -10px); }
+.dev-banner.reveal { transition-delay: .9s; }
+.dev-banner strong { color: var(--gold-300); font-weight: 700; letter-spacing: .02em; }
+.dev-text-short { display: none; }
+.dev-dot {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--gold-300); flex-shrink: 0;
+  box-shadow: 0 0 0 0 rgba(242, 193, 78, .6); animation: dev-pulse 2s infinite;
+}
+@keyframes dev-pulse { 70% { box-shadow: 0 0 0 8px rgba(242, 193, 78, 0); } 100% { box-shadow: 0 0 0 0 rgba(242, 193, 78, 0); } }
+.dev-close {
+  width: 28px; height: 28px; border-radius: 50%; border: 0; flex-shrink: 0;
+  background: rgba(255, 255, 255, .06); color: var(--text-muted); font-size: 16px; line-height: 1;
+}
+.dev-close:hover { color: var(--text-primary); background: rgba(255, 255, 255, .12); }
+.dev-banner.is-hidden { display: none; }
+body.is-focus .dev-banner { opacity: 0; pointer-events: none; transition-delay: 0s; }
+.soon {
+  display: inline-block; margin-left: 8px; padding: 2px 7px; border-radius: 999px;
+  border: 1px solid rgba(242, 193, 78, .4); color: var(--gold-300);
+  font-style: normal; font-size: 9.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+}
+.chip .soon { margin-left: auto; }
 
 /* ---------- Floating product label ---------- */
 .glass-label {
@@ -219,17 +334,20 @@ h1 {
 .glass-label.is-visible { opacity: 1; }
 .glass-label.is-focus {
   pointer-events: auto; left: var(--gutter) !important; top: auto !important;
-  bottom: clamp(88px, 13vh, 150px); transform: none; max-width: 360px; padding: 20px 22px;
+  bottom: clamp(88px, 13vh, 150px); transform: none; width: max-content; max-width: min(430px, calc(100vw - 32px)); padding: 20px 22px;
 }
 .glass-label.is-focus h2 { font-size: 20px; }
 .hero-copy, .hero-chips { transition: opacity .5s var(--ease-out), transform .5s var(--ease-out); }
-.is-focus .hero-copy, .is-focus .hero-chips { opacity: 0; transform: translateY(12px); pointer-events: none; transition-delay: 0s; }
+.is-focus .hero-copy, .is-focus .hero-chips { opacity: 0; transform: translateY(12px); transition-delay: 0s; }
+.is-focus .hero-copy *, .is-focus .hero-chips * { pointer-events: none; }
 @media (max-width: 960px) { .glass-label.is-focus { left: 16px !important; right: 16px; max-width: none; bottom: 24px; } }
 .glass-label .tag { font-family: var(--font-display); font-size: 9.5px; letter-spacing: .28em; text-transform: uppercase; color: var(--gold-300); }
 .glass-label h2 { margin: 6px 0 4px; font-size: 16px; font-weight: 700; }
 .glass-label p { font-size: 13px; color: var(--text-muted); }
-.glass-label .label-actions { display: flex; gap: 8px; margin-top: 12px; }
-.glass-label .btn { min-height: 40px; padding: 0 14px; font-size: 13px; }
+.glass-label .label-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.glass-label.is-focus p { max-width: 36ch; }
+.glass-label .btn { min-height: 40px; padding: 0 14px; font-size: 13px; white-space: nowrap; }
+.glass-label .btn .soon { margin-left: 6px; }
 
 .back-btn {
   position: fixed; z-index: 20; left: var(--gutter); top: 100px; min-height: 44px; padding: 0 16px;
@@ -307,11 +425,16 @@ body:not(.is-intro) .skip-intro { opacity: 0; pointer-events: none; }
   .chip { flex: 1; min-width: 0; padding: 0 12px; gap: 8px; justify-content: center; font-size: 13px; }
   .chip:hover { transform: none; }
   .hint { display: none; }
+  .dev-banner { top: 90px; font-size: 12px; }
+  .dev-text { display: none; }
+  .dev-text-short { display: inline; }
+  .chip .soon { display: none; }
   .skip-intro { bottom: auto; top: 96px; }
   .back-btn { top: 96px; left: 16px; }
 }
 @media (max-width: 560px) {
-  .lang { display: none; }
+  .lang { height: 36px; }
+  .lang button { padding: 0 7px; font-size: 11px; }
   .cta-row .btn { flex: 1 1 100%; }
   .lead { font-size: 15px; }
   .eyebrow { font-size: 9.5px; letter-spacing: .22em; }
