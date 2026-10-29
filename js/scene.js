@@ -8,6 +8,7 @@ import { buildProduct } from './procedural.js';
 import { buildFurniture, createFurnitureMaterials } from './furniture.js';
 import { buildOutdoor } from './outdoor.js';
 import { oakFloor, plaster, worldBox } from './textures.js';
+import { PRODUCTS } from './products.js';
 
 const V3 = THREE.Vector3;
 export const ROOM = { H: 4.8, T: 0.24 };
@@ -31,17 +32,7 @@ for (const w of Object.values(WALLS)) {
   w.uMax = w.length + w.extendB;
 }
 
-// Generic, fictional exhibits (no manufacturer data). Names are product types only.
-export const PRODUCTS = [
-  // Windows wall (left)
-  { id: 'tilt', type: 'tilt', wall: 'left', u: 3.9, w: 1.9, h: 2.1, b: 0.85, tag: 'Langai', name: 'Varstomas-verčiamas langas' },
-  { id: 'slide', type: 'slide', wall: 'left', u: 6.9, w: 3.3, h: 2.4, b: 0.7, tag: 'Langai', name: 'Stumdoma langų sistema' },
-  { id: 'fixed', type: 'fixed', wall: 'left', u: 9.95, w: 1.9, h: 2.1, b: 0.85, tag: 'Langai', name: 'Langas su varstomu viršlangiu' },
-  // Doors wall (right)
-  { id: 'french', type: 'french', wall: 'right', u: 2.1, w: 1.7, h: 2.4, b: 0, tag: 'Durys', name: 'Dvivėrės stiklinės durys' },
-  { id: 'patio', type: 'patio', wall: 'right', u: 5.0, w: 2.6, h: 2.4, b: 0, tag: 'Durys', name: 'Terasos stumdomos durys' },
-  { id: 'entry', type: 'door', wall: 'right', u: 8.1, w: 1.15, h: 2.35, b: 0, tag: 'Durys', name: 'Lauko durys' },
-];
+export { PRODUCTS };
 
 const SKY_VERT = /* glsl */ `
 varying vec3 vDir;
@@ -292,6 +283,11 @@ export function buildWorld(renderer, { reflectScale = 0.5, shadowSize = 2048, sm
   ceiling.position.y = ROOM.H;
   ceiling.castShadow = true;
   scene.add(ceiling);
+  // Soffit over the open front: the tall portrait (phone) camera stands outside the room and
+  // would otherwise see sky above the ceiling edge. No shadow, so the floor in front stays lit.
+  const soffit = new THREE.Mesh(new THREE.PlaneGeometry(22, 4.6).rotateX(Math.PI / 2), mats.ceiling);
+  soffit.position.set(0, ROOM.H, 6.2 + 2.3);
+  scene.add(soffit);
   const strips = [];
   const stripMat = () => new THREE.MeshBasicMaterial({ color: 0x000000 });
   for (const [key, def] of Object.entries(WALLS)) {

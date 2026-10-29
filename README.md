@@ -4,11 +4,15 @@ Cinematic landing page for Vakema windows and doors: a gold wireframe assembles 
 furnished home showroom (windows wall left, doors wall right) set in a daylight garden.
 
 - Cursor-guided camera, glass navigation, clickable windows and doors
-- Langai / Durys wall views; the mouse wheel steps through the products
+- Langai / Durys wall views; the mouse wheel (or a vertical swipe on phones) steps through the products
 - Animated Kontaktai panel (sample contact details – replace before launch)
 - Four-step "Gauti pasiūlymą" quote request (demo: nothing is sent yet – plan in [docs/getoffer.md](docs/getoffer.md))
 - LT / EN language switch (manual only)
-- 3D only: a loader with a progress bar waits until every asset is ready; if the 3D can't start (no WebGL, a failed download), it shows a message with a retry button
+- Device check before anything heavy loads: full 3D, reduced 3D (no ambient occlusion, lower resolution) or a
+  lite version without WebGL – pre-rendered stills and clips of the same scene with clickable products.
+  If the 3D can't start, the lite version opens; `?lite=1` / `?3d=1` or the corner switch override the choice
+- The site's files stay in the browser after the first visit (`sw.js`); a one-time notice tells visitors and
+  lets them opt out
 
 Plan and brief: [docs/3d-showroom](docs/3d-showroom/). The previous site lives on the
 `legacy-main` branch.
@@ -23,6 +27,16 @@ python -m http.server 5173
 
 Then open http://localhost:5173. Returning visitors get a condensed intro; use a private
 window to see the full version.
+
+## Lite version assets
+
+The stills, clips and hotspot positions in `assets/lite/` are rendered from the real 3D scene
+(`?capture=1`, virtual time, one frame per step). After changing the scene, render them again
+(Node 22+, Chrome, ffmpeg on PATH; `--stills` skips the clips):
+
+```bash
+node tools/capture/render.mjs
+```
 
 ## Deploy
 
