@@ -238,6 +238,9 @@ async function start() {
     } else leaveWall();
   }
 
+  // Pagrindinis / the logo (js/chrome.js): back to the main view without reloading the page
+  addEventListener('vakema:home', () => (mode === 'intro' ? skipIntro() : goOverview()));
+
   function focusProduct(p) {
     if (!p) return;
     if (focused && focused !== p) focused.close();

@@ -880,3 +880,16 @@ body.page { height: auto; min-height: 100%; overflow: auto; }
   .pg-cta { padding: 24px; }
   .pg-cta .btn { flex: 1 1 100%; }
 }
+
+/* Content pages inside the window over the showroom (#puslapis, js/chrome.js) */
+.page-sheet .sheet-panel { width: min(1180px, 100%); }
+.page-sheet .sheet-inner { padding: 0; }
+.page-sheet .pg-wrap { padding: 0 44px; }
+.page-sheet .pg-hero { padding: 40px 0 40px; }
+.page-sheet .pg-section { padding: 48px 0; }
+.page-sheet .pg-cta { margin: 8px 0 40px; }
+.page-sheet .sheet-loading { padding: 80px 44px; color: var(--text-muted); }
+@media (max-width: 560px) {
+  .page-sheet .pg-wrap { padding: 0 20px; }
+  .page-sheet .pg-hero { padding-top: 28px; }
+}
