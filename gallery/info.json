@@ -1,0 +1,166 @@
+{
+ "_folders": [
+  "langai",
+  "durys"
+ ],
+ "langai/01-assessment.webp": {
+  "title": "Apžiūra ir matavimai",
+  "text": "Tiksliai išmatuojame angą ir aptariame sprendimą",
+  "en": {
+   "title": "Survey and measurements",
+   "text": "We measure the opening and agree on the solution"
+  }
+ },
+ "langai/02-preparation.webp": {
+  "title": "Patalpos paruošimas",
+  "text": "Uždengiame baldus ir grindis",
+  "en": {
+   "title": "Preparing the room",
+   "text": "Furniture and floors are covered"
+  }
+ },
+ "langai/03-removal.webp": {
+  "title": "Senų gaminių išmontavimas",
+  "text": "Atsargiai išimame seną langą",
+  "en": {
+   "title": "Removing the old units",
+   "text": "The old window comes out carefully"
+  }
+ },
+ "langai/04-opening.webp": {
+  "title": "Angos paruošimas",
+  "text": "Išvalome ir išlyginame angą",
+  "en": {
+   "title": "Preparing the opening",
+   "text": "The opening is cleaned and levelled"
+  }
+ },
+ "langai/05-dry-fit.webp": {
+  "title": "Pritaikymas",
+  "text": "Patikriname matmenis prieš tvirtinant",
+  "en": {
+   "title": "Dry fit",
+   "text": "Sizes are checked before fixing"
+  }
+ },
+ "langai/06-alignment.webp": {
+  "title": "Lygiavimas",
+  "text": "Išlyginame gulsčiuku ir pleištais",
+  "en": {
+   "title": "Alignment",
+   "text": "Levelled with a spirit level and shims"
+  }
+ },
+ "langai/07-securing.webp": {
+  "title": "Tvirtinimas",
+  "text": "Pritvirtiname ankeriais prie sienos",
+  "en": {
+   "title": "Fixing",
+   "text": "Anchored securely to the wall"
+  }
+ },
+ "langai/08-insulation.webp": {
+  "title": "Sandarinimas ir šiltinimas",
+  "text": "Užpildome tarpus montavimo putomis",
+  "en": {
+   "title": "Sealing and insulation",
+   "text": "Gaps are filled with installation foam"
+  }
+ },
+ "langai/09-finishing.webp": {
+  "title": "Apdaila",
+  "text": "Sumontuojame apvadus ir palanges",
+  "en": {
+   "title": "Finishing",
+   "text": "Trims and sills are fitted"
+  }
+ },
+ "langai/10-inspection.webp": {
+  "title": "Patikra ir perdavimas",
+  "text": "Patikriname veikimą ir sutvarkome patalpą",
+  "en": {
+   "title": "Check and handover",
+   "text": "Everything is tested and the room tidied"
+  }
+ },
+ "durys/01-assessment.webp": {
+  "title": "Apžiūra ir matavimai",
+  "text": "Išmatuojame angą ir aptariame durų modelį",
+  "en": {
+   "title": "Survey and measurements",
+   "text": "We measure the opening and agree on the door model"
+  }
+ },
+ "durys/02-preparation.webp": {
+  "title": "Patalpos paruošimas",
+  "text": "Apsaugome grindis ir laiptinę",
+  "en": {
+   "title": "Preparing the room",
+   "text": "Floors and the hallway are protected"
+  }
+ },
+ "durys/03-removal.webp": {
+  "title": "Senų gaminių išmontavimas",
+  "text": "Atsargiai išimame senas duris",
+  "en": {
+   "title": "Removing the old units",
+   "text": "The old door comes out carefully"
+  }
+ },
+ "durys/04-opening.webp": {
+  "title": "Angos paruošimas",
+  "text": "Išvalome angą ir slenkstį",
+  "en": {
+   "title": "Preparing the opening",
+   "text": "The opening and threshold are cleaned"
+  }
+ },
+ "durys/05-dry-fit.webp": {
+  "title": "Pritaikymas",
+  "text": "Patikriname matmenis prieš tvirtinant",
+  "en": {
+   "title": "Dry fit",
+   "text": "Sizes are checked before fixing"
+  }
+ },
+ "durys/06-alignment.webp": {
+  "title": "Lygiavimas",
+  "text": "Išlyginame staktą gulsčiuku",
+  "en": {
+   "title": "Alignment",
+   "text": "The frame is levelled with a spirit level"
+  }
+ },
+ "durys/07-securing.webp": {
+  "title": "Tvirtinimas",
+  "text": "Pritvirtiname staktą varžtais",
+  "en": {
+   "title": "Fixing",
+   "text": "The frame is screwed in place"
+  }
+ },
+ "durys/08-insulation.webp": {
+  "title": "Sandarinimas ir šiltinimas",
+  "text": "Užpildome tarpus ir sandariname slenkstį",
+  "en": {
+   "title": "Sealing and insulation",
+   "text": "Gaps are filled and the threshold sealed"
+  }
+ },
+ "durys/09-finishing.webp": {
+  "title": "Apdaila",
+  "text": "Sumontuojame furnitūrą ir apvadus",
+  "en": {
+   "title": "Finishing",
+   "text": "Hardware and trims are fitted"
+  }
+ },
+ "durys/10-inspection.webp": {
+  "title": "Patikra ir perdavimas",
+  "text": "Patikriname spynas ir sandarumą",
+  "en": {
+   "title": "Check and handover",
+   "text": "Locks and seals are tested"
+  }
+ }
+}

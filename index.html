@@ -90,12 +90,12 @@
         [J + 'shaders/LuminosityHighPassShader.js', 1], [J + 'shaders/OutputShader.js', 1], [J + 'shaders/GTAOShader.js', 4],
         [J + 'shaders/PoissonDenoiseShader.js', 2], [J + 'math/SimplexNoise.js', 3], [J + 'objects/Reflector.js', 2],
         [J + 'geometries/RoundedBoxGeometry.js', 1],
-        ['js/main.js', 8], ['js/chrome.js', 5], ['js/products.js', 1], ['js/scene.js', 7], ['js/intro.js', 3], ['js/i18n.js', 5], ['js/quote.js', 5],
+        ['js/main.js', 8], ['js/chrome.js', 5], ['js/works.js', 3], ['js/products.js', 1], ['js/scene.js', 7], ['js/intro.js', 3], ['js/i18n.js', 5], ['js/quote.js', 5],
         ['js/outdoor.js', 6], ['js/textures.js', 3], ['js/furniture.js', 4], ['js/procedural.js', 3]
       ];
       // The lite version needs only the page chrome; js/lite.js reports when its first still is in.
       if (window.__vakemaTier === 'lite') modules = [
-        ['js/lite.js', 6], ['js/chrome.js', 5], ['js/i18n.js', 5], ['js/quote.js', 5], ['js/products.js', 1]
+        ['js/lite.js', 6], ['js/chrome.js', 5], ['js/i18n.js', 5], ['js/quote.js', 5], ['js/works.js', 3], ['js/products.js', 1]
       ];
       var LOGO = ['assets/vakema-logo.jpg', 166];
       // What is really happening at each point of the bar (the site always opens in Lithuanian)
@@ -292,7 +292,7 @@
         <li><a href="#" data-soon data-i18n="nav.windows">Langai</a></li>
         <li><a href="#" data-soon data-i18n="nav.doors">Durys</a></li>
         <li><a href="#" data-soon data-i18n="nav.install">Montavimas</a></li>
-        <li><a href="#" data-soon data-i18n="nav.work">Mūsų darbai</a></li>
+        <li><a href="#darbai" data-works data-i18n="nav.work">Mūsų darbai</a></li>
         <li><a href="#kontaktai" data-contacts data-i18n="nav.contact">Kontaktai</a></li>
         <li class="nav-tier"><button type="button" data-tier-switch></button></li>
       </ul>
@@ -339,7 +339,7 @@
   </div>
 
   <!-- Contacts: opens as a glass panel over the showroom. Sample details for the presentation. -->
-  <section class="sheet contacts" id="kontaktai" role="dialog" aria-modal="true" aria-labelledby="contacts-title" hidden>
+  <section class="sheet sheet-window contacts" id="kontaktai" role="dialog" aria-modal="true" aria-labelledby="contacts-title" hidden>
     <div class="sheet-backdrop" data-close></div>
     <div class="sheet-panel">
       <button class="sheet-close" type="button" data-close aria-label="Uždaryti kontaktus" data-i18n-attr="aria-label:a.closeContacts">×</button>
@@ -392,6 +392,34 @@
         </div>
 
         <p class="sheet-note" data-anim style="--i:8" data-i18n="contacts.note">Pavyzdiniai kontaktai pristatymui – bus pakeisti tikrais.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mūsų darbai: gallery carousel in a window over the showroom (slides from js/works.js).
+       Sample pictures (renders of the showroom) until real project photos arrive. -->
+  <section class="sheet sheet-window works" id="darbai" role="dialog" aria-modal="true" aria-labelledby="works-title" hidden>
+    <div class="sheet-backdrop" data-close></div>
+    <div class="sheet-panel">
+      <button class="sheet-close" type="button" data-close aria-label="Uždaryti" data-i18n-attr="aria-label:a.close">×</button>
+      <div class="sheet-inner">
+        <header class="sheet-head works-head">
+          <div>
+            <p class="eyebrow" data-anim style="--i:0" data-i18n="works.eyebrow">Mūsų darbai</p>
+            <h2 id="works-title" data-anim style="--i:1" data-i18n="works.title">Įgyvendinti projektai</h2>
+          </div>
+          <div class="works-nav" data-anim style="--i:2">
+            <span class="works-count" aria-live="polite"><b data-works-current>01</b> / <span data-works-total>00</span></span>
+            <button class="works-arrow" type="button" data-works-prev aria-label="Ankstesnis" data-i18n-attr="aria-label:a.prev">←</button>
+            <button class="works-arrow" type="button" data-works-next aria-label="Kitas" data-i18n-attr="aria-label:a.next">→</button>
+          </div>
+        </header>
+        <div class="works-carousel" data-anim style="--i:3" aria-roledescription="carousel" aria-label="Mūsų darbai" data-i18n-attr="aria-label:a.works">
+          <ul class="works-track" id="works-track"></ul>
+          <div class="works-progress" aria-hidden="true"><span></span></div>
+        </div>
+        <div class="works-thumbs" id="works-thumbs" data-anim style="--i:4"></div>
+        <p class="sheet-note" data-anim style="--i:5" data-i18n="works.note">Pavyzdinės nuotraukos pristatymui – bus pakeistos tikrų objektų nuotraukomis.</p>
       </div>
     </div>
   </section>

@@ -25,11 +25,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Static site, no build step: publish only the site files (not docs/).
+      # Static site: publish only the site files (not docs/, tools/).
       - name: Collect site files
         run: |
           mkdir _site
           cp -r index.html styles.css sw.js js assets _site/
+
+      # "Mūsų darbai": every photo in gallery/ is resized (WebP + thumbnail) and listed in
+      # _site/gallery/gallery.json, so adding a photo to the folder is all it takes.
+      - name: Build gallery
+        run: node tools/gallery.mjs --out _site/gallery
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
