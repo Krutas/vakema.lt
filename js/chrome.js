@@ -116,18 +116,16 @@ export function initChrome() {
   if (location.hash === '#kontaktai') contacts.open(contactsLink);
   if (location.hash === '#pasiulymas') quoteSheet.open($('.nav-cta'));
 
-  // 3D ⇄ lite switch: the choice is remembered on this device (index.html reads it)
+  // 3D ⇄ lite switch: the lite choice lasts for this tab only, 3D stays the default
   const isLite = document.documentElement.dataset.tier === 'lite';
   const switches = document.querySelectorAll('[data-tier-switch]');
   const labelSwitches = () => switches.forEach((b) => { b.textContent = t(isLite ? 'tier.to3d' : 'tier.toLite'); });
   labelSwitches();
   onLangChange(labelSwitches);
   switches.forEach((b) => b.addEventListener('click', () => {
-    try {
-      localStorage.setItem('vakema:tier', isLite ? 'full' : 'lite');
-      sessionStorage.removeItem('vakema:fallback');
-    } catch { /* storage blocked: the URL below still decides this visit */ }
-    location.href = location.pathname + (isLite ? '?3d=1' : '?lite=1');
+    if (!isLite) { window.__vakemaLite(); return; }
+    try { sessionStorage.removeItem('vakema:fallback'); } catch { /* storage blocked */ }
+    location.href = location.pathname + '?3d=1';
   }));
 
   document.addEventListener('click', (e) => {
@@ -196,18 +194,23 @@ function initCacheNotice() {
   if (document.readyState === 'complete') register();
   else addEventListener('load', register, { once: true });
 
-  if (storage.get(CACHE_SEEN)) return;
+  let seenThisVisit = false;
+  try { seenThisVisit = !!sessionStorage.getItem(CACHE_SEEN); } catch { /* storage blocked */ }
+  if (storage.get(CACHE_SEEN) || seenThisVisit) return;
   const notice = $('#cache-notice');
   notice.hidden = false;
-  const close = () => {
-    storage.set(CACHE_SEEN, '1');
+  // "Supratau" hides it for this visit; with "Daugiau nerodyti" ticked, for good
+  const forget = notice.querySelector('[data-cache-forget]');
+  const close = (forever) => {
+    if (forever || forget.checked) storage.set(CACHE_SEEN, '1');
+    else try { sessionStorage.setItem(CACHE_SEEN, '1'); } catch { /* storage blocked */ }
     notice.classList.add('is-leaving');
     setTimeout(() => { notice.hidden = true; }, 400);
   };
-  notice.querySelector('[data-cache-ok]').addEventListener('click', close);
+  notice.querySelector('[data-cache-ok]').addEventListener('click', () => close(false));
   notice.querySelector('[data-cache-off]').addEventListener('click', async () => {
     storage.set(CACHE_OFF, 'off');
-    close();
+    close(true);
     try { await dropCache(); } catch { /* nothing cached yet */ }
     toast(t('cache.cleared'));
   });

@@ -129,7 +129,21 @@ a { color: inherit; }
 .loader-tip-text.is-out { opacity: 0; }
 body:has(#loader) .skip-intro { opacity: 0; pointer-events: none; }
 /* The 3D could not start: the bar gives way to a message and a retry button */
-#loader.is-error .loader-hud, #loader.is-error .loader-bar, #loader.is-error .loader-tip { display: none; }
+#loader.is-error .loader-hud, #loader.is-error .loader-bar, #loader.is-error .loader-tip, #loader.is-error .loader-skip { display: none; }
+.loader-skip {
+  display: block; margin: 14px auto 0; min-height: 36px; padding: 0 16px; border-radius: 999px;
+  border: 1px solid var(--glass-border); background: rgba(255, 255, 255, .04);
+  font-size: 12.5px; letter-spacing: .02em; color: var(--text-muted); transition: color .2s, border-color .2s, background .2s;
+}
+.loader-skip:hover { color: var(--text-primary); border-color: rgba(242, 193, 78, .5); background: rgba(242, 193, 78, .08); }
+[data-tier="lite"] .loader-skip { display: none; }
+.loader-cache {
+  display: flex; align-items: center; justify-content: center; gap: 8px; margin: 14px 0 0;
+  font-size: 11.5px; color: var(--chrome-500); text-align: center;
+}
+.loader-cache::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--gold-300); flex-shrink: 0; opacity: .8; }
+.loader-cache[hidden] { display: none; }
+#loader.is-error .loader-cache { display: none; }
 #loader.is-error .loader-glow { animation: none; opacity: .4; }
 .loader-error { margin-top: 18px; text-align: center; }
 .loader-error-title { margin: 0 0 8px; font-size: 18px; font-weight: 700; color: var(--text-primary); }
@@ -342,6 +356,28 @@ body.sheet-open .hero-copy, body.sheet-open .hero-chips, body.sheet-open .hint {
   .contact-cards { grid-template-columns: 1fr; }
   .sheet-inner { padding-top: 104px; }
   .sheet-close { top: 92px; width: 42px; height: 42px; }
+}
+
+/* Kontaktai: a window over the showroom – the scene stays visible around it, a click on it closes */
+.sheet.contacts:not([hidden]) { display: flex; align-items: center; justify-content: center; padding: 96px var(--gutter) 24px; }
+.contacts .sheet-backdrop { background: rgba(4, 5, 7, .5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); cursor: pointer; }
+.contacts .sheet-panel {
+  position: relative; inset: auto; display: flex; width: min(1060px, 100%); max-height: 100%; overflow: hidden;
+  border-radius: 24px; border: 1px solid var(--glass-border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), 0 40px 100px rgba(0, 0, 0, .6);
+  clip-path: none; opacity: 0; transform: translateY(18px) scale(.97);
+  transition: opacity .45s var(--ease-out), transform .6s var(--ease-out);
+}
+.contacts.is-open .sheet-panel { clip-path: none; opacity: 1; transform: none; }
+.contacts .sheet-inner { flex: 1; min-width: 0; max-width: none; margin: 0; padding: 40px 44px 32px; overflow-y: auto; overscroll-behavior: contain; }
+.contacts .sheet-close { position: absolute; top: 18px; right: 18px; width: 42px; height: 42px; }
+.contacts .sheet-head h2 { font-size: clamp(26px, 3vw, 40px); }
+.contacts .contacts-grid { margin-top: 26px; }
+.contacts.is-open [data-anim] { transition-delay: calc(.15s + var(--i) * 50ms); }
+@media (max-width: 960px) { .sheet.contacts:not([hidden]) { padding: 92px 12px 12px; } }
+@media (max-width: 560px) {
+  .contacts .sheet-inner { padding: 28px 20px 24px; }
+  .contacts .sheet-close { top: 12px; right: 12px; }
 }
 
 /* ---------- Quote request (Gauti pasiūlymą) ---------- */
@@ -598,6 +634,12 @@ body.is-lite #scene, body.is-lite .hint { display: none; }
 .cache-text { margin-top: 8px; font-size: 13px; line-height: 1.5; color: var(--text-muted); }
 .cache-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .cache-actions .btn { min-height: 38px; padding: 0 14px; font-size: 13px; }
+.cache-forget {
+  display: inline-flex; align-items: center; gap: 7px; margin-top: 10px;
+  font-size: 12px; color: var(--text-muted); cursor: pointer; user-select: none;
+}
+.cache-forget:hover { color: var(--text-primary); }
+.cache-forget input { width: 14px; height: 14px; margin: 0; accent-color: var(--gold-300); cursor: pointer; }
 body.sheet-open .cache-notice, body.is-focus .cache-notice { opacity: 0; pointer-events: none; transition-delay: 0s; }
 
 /* 3D ⇄ lite switch: corner pill on desktop, last item of the menu on phones */
