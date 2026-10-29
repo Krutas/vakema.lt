@@ -130,7 +130,13 @@ export function initChrome() {
   }, true);
   if (location.hash === '#kontaktai') contacts.open(contactsLink);
   if (location.hash === '#darbai') works.open(worksLink);
-  if (location.hash === '#pasiulymas') quoteSheet.open($('.nav-cta'));
+  // #pasiulymas=<product id>: a product link on a content page (langai/, durys/) pre-fills that product
+  const [quoteHash, quoteProduct] = location.hash.split('=');
+  if (quoteHash === '#pasiulymas') {
+    quote.setEntry(quoteProduct ? `product:${quoteProduct}` : 'link');
+    if (quoteProduct) quote.addProduct(quoteProduct);
+    quoteSheet.open($('.nav-cta'));
+  }
 
   // 3D ⇄ lite switch: the lite choice lasts for this tab only, 3D stays the default
   const isLite = document.documentElement.dataset.tier === 'lite';

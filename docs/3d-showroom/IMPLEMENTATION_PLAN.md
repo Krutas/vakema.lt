@@ -5,7 +5,51 @@ Based on [windows-doors-website-prompt.md](windows-doors-website-prompt.md). Whe
 
 ---
 
-## 0. Starting point
+## Status (2026-10-29)
+
+### What is built: the static prototype (this repo)
+A **static, no-build** version of the showroom, published as the review build at https://krutas.github.io/vakema.lt/ (`python -m http.server 5173` locally). It is a prototype for review gates 2 and 3, **not** the stack from section 3.
+
+| Part | State | Where |
+|---|---|---|
+| 3D showroom (windows wall, doors wall, focus on a product, sash opening) | Done | `js/scene.js`, `procedural.js`, `furniture.js`, `outdoor.js`, `textures.js` |
+| Camera (mouse look, lean-in, fly-to, wheel/swipe stepping, keyboard) | Done | `js/main.js` |
+| Intro "The Assembly" | Done (V mark → nav not yet) | `js/intro.js` |
+| Device tiers full / reduced / lite, adaptive pixel ratio | Done | `index.html`, `main.js` |
+| Lite version (pre-rendered stills + clips, hotspots) | Done, rendered by `tools/capture/render.mjs` | `js/lite.js`, `assets/lite/` |
+| LT / EN | Done (one URL, no `/lt` `/en` routes) | `js/i18n.js` |
+| Quote form (4 steps, live summary, photos) | Front end done, **sends nothing** (`QUOTE_ENDPOINT` empty, shows "Demonstracinė versija") | `js/quote.js`, `docs/getoffer.md` |
+| Contacts panel with form and map | Front end done, **form fakes success** | `js/chrome.js` |
+| Mūsų darbai gallery | Works; shows AI-generated install-step placeholders | `js/works.js`, `gallery/`, `tools/gallery.mjs` |
+| Offline cache + visitor notice | Done | `sw.js` |
+| Langai / Durys / Montavimas pages, configurator | "Netrukus" links only | – |
+| Brand set (vector logo, favicons), Phase 1 | Not started; only the raster logo and a simple SVG mark | `docs/3d-showroom/brand/`, `assets/` |
+| Backend, admin, database (Phases 2, 8–10) | Not started | – |
+| Git repo, deploy | Done: GitHub Pages deploys `main` (`.github/workflows/pages.yml`, resizes the gallery). No lint or tests yet | `.github/workflows/` |
+
+### Decision needed: what happens to the prototype
+- **A. Port it.** Keep the prototype as the visual reference and rebuild it in the section 3 stack (Next.js + R3F). Best for SEO, admin and the order flow; costs re-implementing the 3D work (≈ phases 3–6 shrink from 15 d to ~6 d because the design is settled).
+- **B. Keep it as the front end.** Keep the static three.js site and add real HTML pages, a small API (forms, later orders) and a headless admin beside it. Faster to launch; the full configurator/admin needs a framework later anyway.
+
+**Recommendation: B for launch, A only if the configurator and admin (phases 7–10) are confirmed.** Most of the business value right now is lead capture, which B covers in days.
+
+### Fix before showing the build to anyone outside the team
+1. **Contact form must not claim "sent"** (`js/chrome.js:90`): wire it to the same endpoint as the quote form, or label it as a demo like the quote form.
+2. **Work only in this repo.** An unversioned local copy with the site in a `hero/` folder already drifted from it once; retire such copies.
+3. **Replace placeholders:** phone `+370 600 00 000`, absolute `og:image` URL (`krutas.github.io`), company details.
+4. **Self-host the fonts** (Michroma, Manrope) instead of Google Fonts (GDPR), and confirm Michroma has ą č ę ė į š ų ū ž; otherwise choose another display font.
+
+### Fix before launch
+5. **Form backend:** one serverless endpoint for quote + contacts (email to the office, plus a stored copy), per `getoffer.md`. Rate limiting and a honeypot instead of a CAPTCHA.
+6. **Indexable content.** Done on 2026-10-29: keyword title and description, canonical, full Open Graph tags, JSON-LD (`HomeAndConstructionBusiness` + `WebSite`, no phone or address until confirmed), a static product list for crawlers, `<noscript>`, `robots.txt`, `sitemap.xml`. All absolute URLs point at the review host until launch. Also done: `langai/`, `durys/`, `montavimas/` (Lithuanian only, `js/page.js`, FAQ + breadcrumb + service structured data, product links open the quote pre-filled via `#pasiulymas=<id>`). Still to do: `/en/` versions, Apie mus, a standalone Kontaktai page, 301s from the old URLs. The 3D showroom stays the home page hero.
+7. **Gallery:** "Įgyvendinti projektai" needs real Vakema photos. Move the 10 install-step images to a "Kaip montuojame" section (redrawn or photographed for real, without the AI stamp), or drop them.
+8. **UX review of the hero:** the mouse wheel currently flies the camera to the next product instead of scrolling. Reconsider once there is page content below the hero. Also review the intro replay on every visit and the 1.5 s minimum loader time.
+9. **Maintenance traps:** the module list with sizes in `index.html` (loader) is kept in sync with the imports by hand, and `sw.js` `VERSION` must be bumped by hand. Generate both in the deploy workflow.
+10. **Remove `noindex`** from `index.html` at launch.
+
+---
+
+## 0. Starting point (before the prototype)
 
 ### What exists today on vakema.lt
 - One-page site in Lithuanian. Nav: *Pagrindinis · Langai · Durys · Paslaugos · Mūsų darbai · Apie mus · Kontaktai*, a language switch (LT) and the CTA **"Gauti pasiūlymą →"**.

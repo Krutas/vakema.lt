@@ -118,7 +118,7 @@ Forma surenka vieną JSON objektą (`buildPayload()` faile `quote.js`). Serveris
 }
 ```
 
-`source.entry`: `nav` (meniu), `hero` (pagrindinis mygtukas) arba `product:<id>` (3D gaminio kortelė) –
+`source.entry`: `nav` (meniu), `hero` (pagrindinis mygtukas), `link` (nuoroda `#pasiulymas` iš kito puslapio) arba `product:<id>` (3D gaminio kortelė arba nuoroda `#pasiulymas=<id>` puslapiuose Langai / Durys) –
 leidžia matyti, kurie gaminiai generuoja užklausas.
 
 Serverio atsakymas: `{ "reference": "VK-20261028-0042", "upload_urls": [ … ] }`.

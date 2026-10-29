@@ -29,7 +29,7 @@ jobs:
       - name: Collect site files
         run: |
           mkdir _site
-          cp -r index.html styles.css sw.js js assets _site/
+          cp -r index.html styles.css sw.js robots.txt sitemap.xml js assets langai durys montavimas _site/
 
       # "Mūsų darbai": every photo in gallery/ is resized (WebP + thumbnail) and listed in
       # _site/gallery/gallery.json, so adding a photo to the folder is all it takes.

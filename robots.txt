@@ -1,0 +1,6 @@
+# Search engines only read robots.txt at the root of a host, so this file takes effect once the
+# site is served from its own domain (https://vakema.lt/). Update the Sitemap URL at launch.
+User-agent: *
+Allow: /
+
+Sitemap: https://krutas.github.io/vakema.lt/sitemap.xml

@@ -360,6 +360,7 @@ async function start() {
 
   // Accessible product list mirrors the 3D exhibits
   const list = $('#product-list');
+  list.replaceChildren(); // drop the static items from index.html
   for (const p of products) {
     const li = document.createElement('li');
     const b = document.createElement('button');
