@@ -34,6 +34,46 @@
   }
   </script>
   <script>
+    // Device tier, decided before anything heavy is fetched:
+    //   full    – the 3D showroom as designed
+    //   reduced – the same 3D without the costliest effects (js/main.js)
+    //   lite    – no three.js at all: pre-rendered stills of the same scene (js/lite.js)
+    // ?lite=1 / ?3d=1 or the switcher (localStorage) always win; a failed 3D start lands in
+    // sessionStorage so the reload opens the lite version.
+    window.__vakemaTier = (function () {
+      var q = location.search, saved = null;
+      if (/[?&]capture/.test(q) || /[?&]3d=1/.test(q)) return 'full';
+      if (/[?&]lite=1/.test(q)) return 'lite';
+      try { saved = sessionStorage.getItem('vakema:fallback') || localStorage.getItem('vakema:tier'); } catch (e) { /* storage blocked */ }
+      if (saved === 'lite' || saved === 'full') return saved;
+      if (!(HTMLScriptElement.supports && HTMLScriptElement.supports('importmap'))) return 'lite';
+
+      // WebGL 2 (three.js needs it). failIfMajorPerformanceCaveat fails on software renderers.
+      var gl = null, soft = false, maxTex = 0;
+      try {
+        var c = document.createElement('canvas');
+        gl = c.getContext('webgl2', { failIfMajorPerformanceCaveat: true });
+        if (!gl) { gl = c.getContext('webgl2'); soft = !!gl; }
+        if (gl) {
+          var info = gl.getExtension('WEBGL_debug_renderer_info');
+          var name = info ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)) : '';
+          if (/swiftshader|llvmpipe|softpipe|basic render|software/i.test(name)) soft = true;
+          maxTex = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+          var lose = gl.getExtension('WEBGL_lose_context');
+          if (lose) lose.loseContext();
+        }
+      } catch (e) { gl = null; }
+      if (!gl || soft) return 'lite';
+
+      var n = navigator, con = n.connection || {};
+      if (con.saveData || /(^|-)2g$/.test(con.effectiveType || '')) return 'lite';
+      var weakMem = n.deviceMemory && n.deviceMemory <= 2, weakCpu = n.hardwareConcurrency && n.hardwareConcurrency <= 2;
+      if (weakMem && weakCpu) return 'lite';
+      if (weakMem || weakCpu || maxTex < 4096) return 'reduced';
+      return 'full';
+    })();
+    document.documentElement.dataset.tier = window.__vakemaTier;
+
     // Loader: fetch every file the 3D scene needs in parallel (instead of one import level
     // at a time) and show real progress. The site only opens once everything is ready;
     // js/main.js reports the last steps (building the scene, compiling shaders).
@@ -48,8 +88,12 @@
         [J + 'shaders/LuminosityHighPassShader.js', 1], [J + 'shaders/OutputShader.js', 1], [J + 'shaders/GTAOShader.js', 4],
         [J + 'shaders/PoissonDenoiseShader.js', 2], [J + 'math/SimplexNoise.js', 3], [J + 'objects/Reflector.js', 2],
         [J + 'geometries/RoundedBoxGeometry.js', 1],
-        ['js/main.js', 8], ['js/scene.js', 7], ['js/intro.js', 3], ['js/i18n.js', 5], ['js/quote.js', 5],
+        ['js/main.js', 8], ['js/chrome.js', 5], ['js/products.js', 1], ['js/scene.js', 7], ['js/intro.js', 3], ['js/i18n.js', 5], ['js/quote.js', 5],
         ['js/outdoor.js', 6], ['js/textures.js', 3], ['js/furniture.js', 4], ['js/procedural.js', 3]
+      ];
+      // The lite version needs only the page chrome; js/lite.js reports when its first still is in.
+      if (window.__vakemaTier === 'lite') modules = [
+        ['js/lite.js', 6], ['js/chrome.js', 5], ['js/i18n.js', 5], ['js/quote.js', 5], ['js/products.js', 1]
       ];
       var LOGO = ['assets/vakema-logo.jpg', 166];
       // What is really happening at each point of the bar (the site always opens in Lithuanian)
@@ -58,7 +102,7 @@
         'Paspauskite ant lango ar durų, kad pamatytumėte juos iš arti.',
         'Langai – kairėje, durys – dešinėje. Rinkitės apačioje.',
         'Pasiūlymą galite užsisakyti tiesiai iš gaminio kortelės.',
-        'Kompiuteryje slinkite pele – kamera keliaus per visus gaminius.'
+        'Slinkite pele arba telefone braukite aukštyn – kamera keliaus per visus gaminius.'
       ];
       var DOWNLOAD_SHARE = 0.8; // the rest of the bar belongs to the steps js/main.js reports
       var total = LOGO[1], done = 0, target = 0, shown = 0, last = -1, running = true, onFull = null;
@@ -129,31 +173,50 @@
       };
     })();
 
-    // The site is 3D only. If it can't start (a download failed, no WebGL, a browser without
-    // import maps), the loader stays and explains why, with a button to try again.
+    // Open the lite version: remembered for this tab only, so a later visit tries 3D again.
+    window.__vakemaLite = function () {
+      try { sessionStorage.setItem('vakema:fallback', 'lite'); } catch (e) { /* storage blocked */ }
+      location.replace(location.pathname + '?lite=1' + location.hash);
+    };
+    // If 3D can't start (no WebGL, a crash while building the scene) the lite version opens.
+    // A failed download keeps the loader with a retry button and a way into the lite version.
     window.__vakemaError = function (kind) {
+      if (kind !== 'network' && window.__vakemaTier !== 'lite') { window.__vakemaLite(); return; }
       if (!document.body) { document.addEventListener('DOMContentLoaded', function () { window.__vakemaError(kind); }); return; }
       var loader = document.getElementById('loader');
       if (!loader || loader.classList.contains('is-error')) return;
       window.__vakemaLoad.stop();
-      var msg = kind === 'webgl'
-        ? ['Šis įrenginys nepalaiko 3D grafikos', 'Atnaujinkite naršyklę arba įjunkite aparatinį spartinimą ir bandykite dar kartą.']
-        : ['Nepavyko įkelti showroomo', 'Patikrinkite interneto ryšį ir bandykite dar kartą.'];
-      loader.querySelector('.loader-error-title').textContent = msg[0];
-      loader.querySelector('.loader-error-text').textContent = msg[1];
+      loader.querySelector('.loader-error-title').textContent = 'Nepavyko įkelti showroomo';
+      loader.querySelector('.loader-error-text').textContent = 'Patikrinkite interneto ryšį ir bandykite dar kartą.';
       loader.querySelector('.loader-retry').onclick = function () { location.reload(); };
+      var lite = loader.querySelector('.loader-lite');
+      lite.hidden = window.__vakemaTier === 'lite';
+      lite.onclick = window.__vakemaLite;
       loader.classList.add('is-error');
       loader.querySelector('.loader-error').hidden = false;
     };
-    // Browsers without import maps never run js/main.js at all
-    if (!(HTMLScriptElement.supports && HTMLScriptElement.supports('importmap'))) window.__vakemaError('webgl');
+
+    // Entry point for the tier
+    (function () {
+      var s = document.createElement('script');
+      s.type = 'module';
+      s.src = window.__vakemaTier === 'lite' ? 'js/lite.js' : 'js/main.js';
+      s.onerror = function () { window.__vakemaError('network'); };
+      document.head.appendChild(s);
+    })();
   </script>
-  <script type="module" src="js/main.js" onerror="window.__vakemaError('network')"></script>
 </head>
 <body class="is-intro">
   <a class="skip-link" href="#turinys" data-i18n="skip">Pereiti prie turinio</a>
 
   <canvas id="scene" aria-hidden="true"></canvas>
+  <!-- Lite version: pre-rendered stills and clips of the 3D showroom with clickable products (js/lite.js) -->
+  <div class="lite-stage" id="lite-stage" hidden>
+    <img class="lite-shot" alt="" decoding="async" />
+    <img class="lite-shot" alt="" decoding="async" />
+    <video class="lite-video" muted playsinline preload="none" disablepictureinpicture aria-hidden="true"></video>
+    <div class="lite-hotspots" id="lite-hotspots"></div>
+  </div>
   <div class="fx-vignette" aria-hidden="true"></div>
   <div class="fx-grain" aria-hidden="true"></div>
 
@@ -173,7 +236,10 @@
       <div class="loader-error" role="alert" hidden>
         <p class="loader-error-title"></p>
         <p class="loader-error-text"></p>
-        <button class="btn btn-gold loader-retry" type="button">Bandyti dar kartą</button>
+        <div class="loader-error-actions">
+          <button class="btn btn-gold loader-retry" type="button">Bandyti dar kartą</button>
+          <button class="btn btn-glass loader-lite" type="button" hidden>Atidaryti lengvąją versiją</button>
+        </div>
       </div>
     </div>
   </div>
@@ -211,6 +277,7 @@
         <li><a href="#" data-soon data-i18n="nav.work">Mūsų darbai</a></li>
         <li><a href="#" data-soon data-i18n="nav.about">Apie mus</a></li>
         <li><a href="#kontaktai" data-contacts data-i18n="nav.contact">Kontaktai</a></li>
+        <li class="nav-tier"><button type="button" data-tier-switch></button></li>
       </ul>
     </nav>
 
@@ -502,6 +569,16 @@
   <button class="back-btn" id="back-btn" type="button" hidden>← Grįžti į pagrindinį</button>
   <p class="hint" id="hint" data-i18n="hint"><span class="mouse" aria-hidden="true"></span>Judinkite pelę – apsižvalgykite. Spustelėkite gaminį.</p>
   <button class="skip-intro" id="skip-btn" type="button" data-i18n="skipIntro">Praleisti intro</button>
+  <!-- Temporary files: the site keeps its files in the browser (sw.js); shown once, with an opt-out -->
+  <div class="cache-notice reveal" id="cache-notice" role="region" aria-labelledby="cache-title" hidden>
+    <p class="cache-title" id="cache-title" data-i18n="cache.title">Laikini failai</p>
+    <p class="cache-text" data-i18n="cache.text">Kad kitą kartą svetainė atsidarytų greičiau, jos failai (vaizdai, video, programos kodas) laikinai išsaugomi jūsų naršyklėje. Asmens duomenys nesaugomi.</p>
+    <div class="cache-actions">
+      <button class="btn btn-gold" type="button" data-cache-ok data-i18n="cache.ok">Supratau</button>
+      <button class="btn btn-glass" type="button" data-cache-off data-i18n="cache.off">Neišsaugoti</button>
+    </div>
+  </div>
+  <button class="tier-switch reveal" type="button" data-tier-switch></button>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>

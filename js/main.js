@@ -5,10 +5,10 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
-import { buildWorld, PRODUCTS } from './scene.js';
-import { createIntro } from './intro.js';
+import { buildWorld } from './scene.js';
+import { BEATS, createIntro } from './intro.js';
 import { initI18n, onLangChange, t } from './i18n.js';
-import { initQuote } from './quote.js';
+import { initChrome, labelHTML } from './chrome.js';
 
 const $ = (s) => document.querySelector(s);
 const body = document.body;
@@ -18,6 +18,10 @@ const INTRO_KEY = 'vakema:intro-seen';
 const DEG = Math.PI / 180;
 const MAX_YAW = 18 * DEG;
 const MAX_PITCH = 8 * DEG;
+// Device tier picked in index.html: 'full' or 'reduced' (the lite version never loads this file).
+const tier = window.__vakemaTier || 'full';
+// ?capture=1: deterministic shots for the lite version (tools/capture/render.mjs drives it)
+const capture = new URLSearchParams(location.search).has('capture');
 
 const store = {
   get(k) { try { return localStorage.getItem(k); } catch { return null; } },
@@ -27,7 +31,7 @@ const store = {
 // Loader progress bar from index.html; this file reports the steps after the downloads.
 const progress = window.__vakemaLoad || { at() {}, finish: () => Promise.resolve(), stop() {} };
 const nextFrame = () => new Promise((r) => requestAnimationFrame(() => r()));
-// The site is 3D only: if it can't start, the loader stays and shows why (see index.html).
+// If 3D can't start, index.html switches to the lite version (or offers a retry on network errors).
 const loadError = (kind) => window.__vakemaError?.(kind);
 
 initI18n();
@@ -35,136 +39,12 @@ initChrome();
 
 let renderer = null;
 try {
-  renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance', preserveDrawingBuffer: capture });
 } catch (err) {
   console.warn('WebGL unavailable.', err);
 }
 if (renderer) start().catch((err) => { console.error(err); loadError('error'); });
 else loadError('webgl');
-
-/* ------------------------------------------------------------------ */
-/* Page chrome: navigation, sheets, language                           */
-/* ------------------------------------------------------------------ */
-function initChrome() {
-  const nav = $('#nav');
-  nav.addEventListener('pointermove', (e) => {
-    const r = nav.getBoundingClientRect();
-    nav.style.setProperty('--mx', `${((e.clientX - r.left) / r.width) * 100}%`);
-  });
-
-  const menuBtn = $('#menu-btn');
-  const links = $('#nav-links');
-  menuBtn.addEventListener('click', () => {
-    const open = menuBtn.getAttribute('aria-expanded') !== 'true';
-    menuBtn.setAttribute('aria-expanded', String(open));
-    links.classList.toggle('is-open', open);
-  });
-
-  // "Under development" notice: dismissible for the session
-  const banner = $('#dev-banner');
-  try { if (sessionStorage.getItem('vakema:dev-banner') === 'hidden') banner.classList.add('is-hidden'); } catch { /* storage blocked */ }
-  banner.querySelector('.dev-close').addEventListener('click', () => {
-    banner.classList.add('is-hidden');
-    try { sessionStorage.setItem('vakema:dev-banner', 'hidden'); } catch { /* storage blocked */ }
-  });
-
-  // Sheets: glass pages that grow out of the link or button that opened them
-  const homeLink = links.querySelector('a[href="./"]');
-  let activeSheet = null;
-  function createSheet(section, { hash, navLink = null }) {
-    let opener = null;
-    const isOpen = () => section.classList.contains('is-open');
-    const sheet = { section, isOpen, open, close };
-    function open(from) {
-      if (isOpen()) return;
-      activeSheet?.close(false);
-      opener = from;
-      const r = from.getBoundingClientRect();
-      section.style.setProperty('--ox', `${r.left + r.width / 2}px`);
-      section.style.setProperty('--oy', `${r.top + r.height / 2}px`);
-      section.hidden = false;
-      section.getBoundingClientRect(); // commit the closed state so the opening animates
-      section.classList.add('is-open');
-      body.classList.add('sheet-open');
-      menuBtn.setAttribute('aria-expanded', 'false');
-      links.classList.remove('is-open');
-      if (navLink) { homeLink.removeAttribute('aria-current'); navLink.setAttribute('aria-current', 'page'); }
-      history.replaceState(null, '', hash);
-      activeSheet = sheet;
-      setTimeout(() => section.querySelector('.sheet-close').focus({ preventScroll: true }), 450);
-    }
-    function close(restoreFocus = true) {
-      if (!isOpen()) return;
-      section.classList.remove('is-open');
-      body.classList.remove('sheet-open');
-      if (navLink) { navLink.removeAttribute('aria-current'); homeLink.setAttribute('aria-current', 'page'); }
-      history.replaceState(null, '', location.pathname + location.search);
-      if (activeSheet === sheet) activeSheet = null;
-      setTimeout(() => { if (!isOpen()) section.hidden = true; }, 900);
-      if (restoreFocus) opener?.focus({ preventScroll: true });
-    }
-    section.querySelectorAll('[data-close]').forEach((el) => el.addEventListener('click', () => close()));
-    return sheet;
-  }
-
-  // Kontaktai
-  const contactsLink = links.querySelector('[data-contacts]');
-  const contacts = createSheet($('#kontaktai'), { hash: '#kontaktai', navLink: contactsLink });
-  document.querySelectorAll('[data-contacts]').forEach((a) => a.addEventListener('click', (e) => {
-    e.preventDefault();
-    contacts.open(a);
-  }));
-  $('#kontaktai form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    toast(t('toast.sent'));
-  });
-
-  // Gauti pasiūlymą: any [data-quote] button opens it; a product card pre-fills that product
-  const quoteSheet = createSheet($('#pasiulymas'), { hash: '#pasiulymas' });
-  const quote = initQuote($('#pasiulymas'), { products: PRODUCTS, t, onLangChange });
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-quote]');
-    if (!btn) return;
-    e.preventDefault();
-    const product = btn.dataset.quote;
-    quote.setEntry(product ? `product:${product}` : btn.closest('.nav') ? 'nav' : 'hero');
-    if (product) quote.addProduct(product);
-    quoteSheet.open(btn);
-  });
-
-  // Capture phase, so Escape closes the sheet before the showroom handles it
-  addEventListener('keydown', (e) => {
-    if (!activeSheet) return;
-    if (e.key === 'Escape') {
-      e.stopPropagation();
-      activeSheet.close();
-    } else if (e.key === 'Tab') {
-      const f = [...activeSheet.section.querySelectorAll('button, a[href], input, select, textarea')]
-        .filter((el) => !el.disabled && !el.closest('[hidden], .hp'));
-      const i = f.indexOf(document.activeElement);
-      if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
-      else if (!e.shiftKey && i === f.length - 1) { e.preventDefault(); f[0].focus(); }
-    }
-  }, true);
-  if (location.hash === '#kontaktai') contacts.open(contactsLink);
-  if (location.hash === '#pasiulymas') quoteSheet.open($('.nav-cta'));
-
-  document.addEventListener('click', (e) => {
-    const soon = e.target.closest('[data-soon]');
-    if (!soon) return;
-    e.preventDefault();
-    toast(t('toast.soon'));
-  });
-}
-
-let toastTimer;
-function toast(text) {
-  const el = $('#toast');
-  el.textContent = text;
-  el.classList.add('is-visible');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('is-visible'), 2600);
-}
 
 function overviewView() {
   const a = innerWidth / innerHeight;
@@ -182,12 +62,14 @@ function overviewView() {
 /* ------------------------------------------------------------------ */
 async function start() {
   // Every download is in once this module runs; let the bar show it before the heavy work.
-  const minBrandBeat = new Promise((r) => setTimeout(r, reduceMotion ? 0 : 1500));
+  const minBrandBeat = new Promise((r) => setTimeout(r, reduceMotion || capture ? 0 : 1500));
   let opened = false;
   progress.at(0.82);
   await nextFrame();
   const small = Math.min(innerWidth, innerHeight) < 700;
-  let dpr = Math.min(devicePixelRatio, small ? 1.5 : 1.75);
+  const reduced = tier === 'reduced';
+  const low = small || reduced; // no ambient occlusion, smaller reflections and shadows
+  let dpr = capture ? 1 : Math.min(devicePixelRatio, reduced ? 1 : small ? 1.5 : 1.75);
   renderer.setPixelRatio(dpr);
   renderer.setSize(innerWidth, innerHeight, false);
   renderer.shadowMap.enabled = true;
@@ -197,16 +79,16 @@ async function start() {
 
   let ov = overviewView();
   const camera = new THREE.PerspectiveCamera(ov.fov, innerWidth / innerHeight, 0.05, 200);
-  const world = buildWorld(renderer, { reflectScale: small ? 0.35 : 0.5, shadowSize: small ? 1024 : 2048, small });
+  const world = buildWorld(renderer, { reflectScale: reduced ? 0.25 : small ? 0.35 : 0.5, shadowSize: low ? 1024 : 2048, small });
   const { scene, products } = world;
   progress.at(0.9);
 
-  const rt = new THREE.WebGLRenderTarget(innerWidth * dpr, innerHeight * dpr, { type: THREE.HalfFloatType, samples: small ? 2 : 4 });
+  const rt = new THREE.WebGLRenderTarget(innerWidth * dpr, innerHeight * dpr, { type: THREE.HalfFloatType, samples: reduced ? 0 : small ? 2 : 4 });
   const composer = new EffectComposer(renderer, rt);
   composer.setPixelRatio(dpr);
   composer.setSize(innerWidth, innerHeight);
   composer.addPass(new RenderPass(scene, camera));
-  if (!small) {
+  if (!low) {
     // Ambient occlusion: soft contact shadows in corners and under furniture
     const ao = new GTAOPass(scene, camera, innerWidth, innerHeight);
     ao.updateGtaoMaterial({ radius: 0.5, distanceExponent: 1.5, thickness: 1.2, scale: 1 });
@@ -277,16 +159,7 @@ async function start() {
     if (!p || mode === 'intro') { label.classList.remove('is-visible', 'is-focus'); return; }
     const isFocus = p === focused;
     label.hidden = false;
-    label.innerHTML = `
-      <span class="tag">${t(`tag.${p.spec.tag}`)}</span>
-      <h2>${t(`product.${p.spec.id}`, p.spec.name)}</h2>
-      ${isFocus
-        ? `<p>${t('label.text')}</p>
-           <div class="label-actions">
-             <a class="btn btn-gold" href="#pasiulymas" data-quote="${p.spec.id}">${t('label.quote')}</a>
-             <a class="btn btn-glass" href="#" data-soon>${t('label.configure')} <em class="soon">${t('soon')}</em></a>
-           </div>`
-        : `<p>${t('label.hover')}</p>`}`;
+    label.innerHTML = labelHTML(p.spec, isFocus);
     label.classList.add('is-visible');
     label.classList.toggle('is-focus', isFocus);
   }
@@ -420,11 +293,14 @@ async function start() {
     if (mode !== 'intro' && (moved += Math.abs(e.movementX || 0) + Math.abs(e.movementY || 0)) > 240) hideHint();
   });
   canvas.addEventListener('pointerleave', () => { hasPointer = false; ndc.set(9, 9); setHovered(null); });
-  canvas.addEventListener('pointerdown', (e) => { down = { x: e.clientX, y: e.clientY }; });
+  canvas.addEventListener('pointerdown', (e) => { down = { x: e.clientX, y: e.clientY, t: performance.now() }; });
   canvas.addEventListener('pointerup', (e) => {
     if (!down) return;
-    const tap = Math.hypot(e.clientX - down.x, e.clientY - down.y) < 8;
+    const dx = e.clientX - down.x, dy = e.clientY - down.y;
+    const tap = Math.hypot(dx, dy) < 8;
+    const swipe = e.pointerType !== 'mouse' && Math.abs(dy) > 60 && Math.abs(dy) > Math.abs(dx) * 1.5 && performance.now() - down.t < 700;
     down = null;
+    if (swipe && mode !== 'intro') { look.tpitch = 0; stepExhibit(dy < 0 ? 1 : -1); return; }
     if (!tap) return;
     if (mode === 'intro') { skipIntro(); return; }
     if (e.pointerType !== 'mouse') {
@@ -449,8 +325,20 @@ async function start() {
     else if (e.key === 'ArrowUp') look.tpitch = Math.max(look.tpitch - step / 2, -MAX_PITCH);
     else if (e.key === 'ArrowDown') look.tpitch = Math.min(look.tpitch + step / 2, MAX_PITCH);
   });
-  // Mouse wheel steps through the exhibits: windows first, then doors. One gesture = one
-  // step; a long continuous scroll keeps stepping about once a second.
+  // Mouse wheel (and a vertical swipe on touch screens) steps through the exhibits: windows
+  // first, then doors. One gesture = one step; a long continuous scroll keeps stepping about
+  // once a second.
+  function stepExhibit(dir) {
+    const start = focused ? products.indexOf(focused)
+      : home ? products.findIndex((p) => p.spec.tag === home.tag) - (dir > 0 ? 1 : 0)
+      : -1;
+    const next = start + dir;
+    if (next < 0 || (!focused && next < start)) { back(); return; }
+    if (next >= products.length) { goOverview(); return; } // past the last door: main view
+    const p = products[next];
+    if (home && home.tag !== p.spec.tag) setHome(p.spec.tag);
+    focusProduct(p);
+  }
   let lastWheel = 0;
   let wheelLock = 0;
   addEventListener('wheel', (e) => {
@@ -461,15 +349,7 @@ async function start() {
     lastWheel = now;
     if (!fresh && now < wheelLock) return;
     wheelLock = now + 1100;
-    const start = focused ? products.indexOf(focused)
-      : home ? products.findIndex((p) => p.spec.tag === home.tag) - (e.deltaY > 0 ? 1 : 0)
-      : -1;
-    const next = start + Math.sign(e.deltaY);
-    if (next < 0 || (!focused && next < start)) { back(); return; }
-    if (next >= products.length) { goOverview(); return; } // past the last door: main view
-    const p = products[next];
-    if (home && home.tag !== p.spec.tag) setHome(p.spec.tag);
-    focusProduct(p);
+    stepExhibit(Math.sign(e.deltaY));
   }, { passive: true });
 
   backBtn.addEventListener('click', back);
@@ -557,7 +437,7 @@ async function start() {
   let slowFrames = 0;
   function adapt(dt) {
     slowFrames = dt > 1 / 38 ? slowFrames + 1 : Math.max(0, slowFrames - 1);
-    if (slowFrames > 90 && dpr > 1) {
+    if (slowFrames > 90 && dpr > 1 && !capture) {
       dpr = Math.max(1, dpr - 0.25);
       renderer.setPixelRatio(dpr);
       composer.setPixelRatio(dpr);
@@ -567,6 +447,11 @@ async function start() {
 
   function frame() {
     const dt = Math.min(clock.getDelta(), 0.05);
+    render(dt);
+    adapt(dt);
+  }
+
+  function render(dt) {
     elapsed += dt;
     updateRig(dt, elapsed);
     world.update(elapsed);
@@ -577,10 +462,10 @@ async function start() {
     }
     placeLabel();
     composer.render(dt);
-    adapt(dt);
   }
 
   document.addEventListener('visibilitychange', () => {
+    if (capture) return; // capture runs on its own clock
     if (document.hidden || !opened) renderer.setAnimationLoop(null);
     else { clock.getDelta(); renderer.setAnimationLoop(frame); }
   });
@@ -602,10 +487,97 @@ async function start() {
   const loader = $('#loader');
   gsap.to(loader, { autoAlpha: 0, duration: reduceMotion ? 0 : 0.7, ease: 'power2.out', onComplete: () => { progress.stop(); loader.remove(); } });
 
-  if (reduceMotion) {
+  if (capture) {
+    initCapture();
+  } else if (reduceMotion) {
     skipIntro();
   } else {
     if (store.get(INTRO_KEY)) tl.timeScale(5); // condensed replay for returning visitors
     tl.play(0);
+  }
+
+  /* ---------- Capture: stills, clips and hotspot boxes for the lite version ---------- */
+  // Runs on virtual time: gsap and the renderer advance exactly one frame per step, so clips
+  // come out smooth however slow the machine is. Driven by tools/capture/render.mjs.
+  function initCapture() {
+    const FPS = 30;
+    renderer.setAnimationLoop(null);
+    gsap.ticker.remove(gsap.updateRoot);
+    let vt = gsap.ticker.time;
+    const still = () => { gsap.killTweensOf(look); Object.assign(look, { yaw: 0, pitch: 0, tyaw: 0, tpitch: 0, amp: 0 }); };
+    const step = () => {
+      vt += 1 / FPS;
+      gsap.updateRoot(vt);
+      still();
+      render(1 / FPS);
+    };
+    const advance = (sec) => { for (let i = Math.round(sec * FPS); i > 0; i--) step(); };
+    const byId = (id) => products.find((p) => p.spec.id === id);
+    const calm = () => { hasPointer = false; setHovered(null); };
+    const settled = () => { calm(); if (mode === 'intro') skipIntro(); goOverview(); advance(2.5); };
+
+    const box = new THREE.Box3();
+    const corner = new THREE.Vector3();
+    const round = (v) => Math.round(v * 10000) / 10000;
+    window.__capture = {
+      fps: FPS,
+      // Still views: 'overview' | 'wall:Langai' | 'wall:Durys' | 'focus:<product id>'
+      shot(name) {
+        const [kind, arg] = name.split(':');
+        calm();
+        if (mode === 'intro') skipIntro();
+        if (kind === 'overview') goOverview();
+        else if (kind === 'wall') showWall(arg);
+        else focusProduct(byId(arg));
+        advance(3.2); // camera tween + sash opening
+      },
+      // Clips: set the start state, return how many frames to step. Then call frame() that often.
+      //   'intro'      – the assembly, from the first beat to the resting overview (fresh page only)
+      //   'wall:<tag>' – overview → standing at that wall (played backwards for the way out)
+      //   'focus:<id>' – the last metres of the approach to a product while its sash opens
+      clip(name) {
+        const [kind, arg] = name.split(':');
+        if (kind === 'intro') {
+          if (mode !== 'intro') throw new Error('intro needs a fresh page');
+          tl.timeScale(1).play(0);
+          return { frames: Math.ceil(tl.duration() * FPS) + 1, uiAt: BEATS.ui };
+        }
+        settled();
+        if (kind === 'wall') {
+          showWall(arg);
+          return { frames: Math.ceil(1.65 * FPS) };
+        }
+        const p = byId(arg);
+        rig.pos.copy(p.viewPos).addScaledVector(p.normal, 2.4).add(new THREE.Vector3(0, 0.25, 0));
+        rig.tgt.copy(p.viewTgt);
+        focusProduct(p); // tweens from here to the product view; the sash opens at 0.75–1.95 s
+        return { frames: Math.ceil(2.1 * FPS) };
+      },
+      frame(type = 'image/jpeg', quality = 0.95) {
+        step();
+        return canvas.toDataURL(type, quality);
+      },
+      // Products in view: bounding box and label anchor as fractions of the canvas
+      hotspots() {
+        camera.updateMatrixWorld();
+        return products.flatMap((p) => {
+          box.setFromObject(p.hit);
+          let x0 = 1, y0 = 1, x1 = 0, y1 = 0;
+          for (let i = 0; i < 8; i++) {
+            corner.set(i & 1 ? box.max.x : box.min.x, i & 2 ? box.max.y : box.min.y, i & 4 ? box.max.z : box.min.z).project(camera);
+            if (corner.z > 1) return []; // partly behind the camera
+            const x = corner.x * 0.5 + 0.5, y = -corner.y * 0.5 + 0.5;
+            x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+          }
+          x0 = Math.max(0, x0); y0 = Math.max(0, y0); x1 = Math.min(1, x1); y1 = Math.min(1, y1);
+          if (x1 - x0 < 0.02 || y1 - y0 < 0.02) return [];
+          proj.copy(p.anchor).project(camera);
+          return [{ id: p.spec.id, x: round(x0), y: round(y0), w: round(x1 - x0), h: round(y1 - y0),
+            ax: round(proj.x * 0.5 + 0.5), ay: round(-proj.y * 0.5 + 0.5) }];
+        });
+      },
+      grab: (type = 'image/webp', quality = 0.86) => canvas.toDataURL(type, quality),
+    };
+    window.__captureReady = true;
   }
 }
