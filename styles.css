@@ -339,14 +339,14 @@ body.is-wall .hero-copy * { pointer-events: none; }
 .contact-form textarea::placeholder { color: #5f6773; }
 .contact-form .btn { align-self: flex-start; margin-top: 6px; }
 .contact-map { grid-area: map; position: relative; min-height: 200px; border-radius: 18px; overflow: hidden; border: 1px solid var(--glass-border); background: #0d0f13; }
-.contact-map svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-.map-road { fill: none; stroke: #2a2f37; stroke-width: 6; stroke-linecap: round; }
-.map-road.major { stroke: #3a414b; stroke-width: 10; }
-.map-river { fill: none; stroke: #1b3346; stroke-width: 16; }
-.map-pin { fill: var(--gold-300); }
-.map-pulse { fill: none; stroke: var(--gold-300); stroke-width: 2; transform-origin: 232px 104px; animation: map-pulse 2.2s var(--ease-out) infinite; }
-@keyframes map-pulse { from { transform: scale(.4); opacity: .9; } to { transform: scale(3); opacity: 0; } }
-.map-label { position: absolute; left: 16px; bottom: 14px; font-family: var(--font-display); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold-300); }
+/* Google's light map, turned dark to match the site (the red pin stays red) */
+.map-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; filter: invert(.92) hue-rotate(180deg) saturate(.7) brightness(.95); }
+.map-label {
+  position: absolute; left: 12px; bottom: 12px; padding: 7px 12px; border-radius: 999px;
+  border: 1px solid rgba(242, 193, 78, .4); background: rgba(10, 11, 14, .82); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  font-family: var(--font-display); font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--gold-300); text-decoration: none;
+}
+.map-label:hover { background: rgba(242, 193, 78, .14); }
 .sheet-note { margin-top: 26px; font-size: 12.5px; color: var(--text-muted); }
 body.sheet-open .hero-copy, body.sheet-open .hero-chips, body.sheet-open .hint { opacity: 0; pointer-events: none; }
 @media (max-width: 900px) {

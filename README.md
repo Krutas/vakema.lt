@@ -5,7 +5,7 @@ furnished home showroom (windows wall left, doors wall right) set in a daylight 
 
 - Cursor-guided camera, glass navigation, clickable windows and doors
 - Langai / Durys wall views; the mouse wheel (or a vertical swipe on phones) steps through the products
-- Kontaktai window over the showroom, closes on a click outside (phone and address are still samples)
+- Kontaktai window over the showroom, closes on a click outside (the phone number is still a sample); Google map of the showroom address
 - Four-step "Gauti pasiūlymą" quote request (demo: nothing is sent yet – plan in [docs/getoffer.md](docs/getoffer.md))
 - LT / EN language switch (manual only)
 - 3D is always the default: weak devices, software rendering or Save-Data get a reduced 3D (no ambient
