@@ -366,7 +366,7 @@
             <li class="contact-card" data-anim style="--i:5">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12Z" /><circle cx="12" cy="9" r="2.5" /></svg>
               <span data-i18n="contacts.showroom">Salonas</span>
-              <p>Pavyzdžio g. 1, Vilnius</p>
+              <p data-address>Vytauto g., Jieznas</p>
             </li>
             <li class="contact-card" data-anim style="--i:6">
               <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
@@ -383,20 +383,11 @@
             <button class="btn btn-gold" type="submit" data-i18n="contacts.send">Siųsti užklausą <span aria-hidden="true">→</span></button>
           </form>
 
-          <div class="contact-map" data-anim style="--i:7" aria-hidden="true">
-            <svg viewBox="0 0 400 220" preserveAspectRatio="xMidYMid slice">
-              <path class="map-river" d="M-10 170 C 80 140, 140 200, 230 165 S 360 120, 410 140" />
-              <path class="map-road major" d="M-10 80 L 410 120" />
-              <path class="map-road major" d="M150 -10 L 210 230" />
-              <path class="map-road" d="M-10 30 L 180 50 L 410 40" />
-              <path class="map-road" d="M60 -10 L 90 230" />
-              <path class="map-road" d="M300 -10 L 280 230" />
-              <path class="map-road" d="M190 100 L 330 190" />
-              <circle class="map-pulse" cx="232" cy="104" r="10" />
-              <path class="map-pin" d="M232 104c-9-10-14-17-14-24a14 14 0 0 1 28 0c0 7-5 14-14 24Z" />
-              <circle cx="232" cy="80" r="5" fill="#07080A" />
-            </svg>
-            <span class="map-label" data-i18n="contacts.map">Vakema būstinė</span>
+          <!-- Google map of the address above (js/chrome.js builds it from [data-address], so the
+               pin follows the address). Loaded only when Kontaktai opens: no Google requests before. -->
+          <div class="contact-map" data-anim style="--i:7">
+            <iframe class="map-frame" title="Vakema salonas žemėlapyje" loading="lazy" referrerpolicy="no-referrer-when-downgrade" data-i18n-attr="title:a.mapTitle"></iframe>
+            <a class="map-label" target="_blank" rel="noopener" data-map-link><span data-i18n="contacts.map">Atidaryti Google Maps</span> <span aria-hidden="true">↗</span></a>
           </div>
         </div>
 

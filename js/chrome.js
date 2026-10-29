@@ -43,12 +43,13 @@ export function initChrome() {
   // Sheets: glass pages that grow out of the link or button that opened them
   const homeLink = links.querySelector('a[href="./"]');
   let activeSheet = null;
-  function createSheet(section, { hash, navLink = null }) {
+  function createSheet(section, { hash, navLink = null, onOpen = null }) {
     let opener = null;
     const isOpen = () => section.classList.contains('is-open');
     const sheet = { section, isOpen, open, close };
     function open(from) {
       if (isOpen()) return;
+      onOpen?.();
       activeSheet?.close(false);
       opener = from;
       const r = from.getBoundingClientRect();
@@ -80,7 +81,7 @@ export function initChrome() {
 
   // Kontaktai
   const contactsLink = links.querySelector('[data-contacts]');
-  const contacts = createSheet($('#kontaktai'), { hash: '#kontaktai', navLink: contactsLink });
+  const contacts = createSheet($('#kontaktai'), { hash: '#kontaktai', navLink: contactsLink, onOpen: loadMap });
   document.querySelectorAll('[data-contacts]').forEach((a) => a.addEventListener('click', (e) => {
     e.preventDefault();
     contacts.open(a);
@@ -218,4 +219,14 @@ function initCacheNotice() {
     try { await dropCache(); } catch { /* nothing cached yet */ }
     toast(t('cache.cleared'));
   });
+}
+
+/* Google map in Kontaktai: built from the showroom address, so changing the address in
+   index.html ([data-address]) moves the pin too. Keyless embed, set only on first open. */
+function loadMap() {
+  const frame = $('#kontaktai .map-frame');
+  if (frame.src) return;
+  const q = encodeURIComponent($('#kontaktai [data-address]').textContent.trim());
+  frame.src = `https://www.google.com/maps?q=${q}&z=15&hl=lt&output=embed`;
+  $('#kontaktai [data-map-link]').href = `https://www.google.com/maps/search/?api=1&query=${q}`;
 }
