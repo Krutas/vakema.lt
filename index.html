@@ -118,12 +118,6 @@
         }, 300);
       }, 3600);
 
-      // Very slow or stalled connection: offer the 2D page instead of waiting forever.
-      setTimeout(function () {
-        var slow = running && document.querySelector('.loader-slow');
-        if (slow) { slow.hidden = false; slow.onclick = function () { window.__vakemaFail(true); }; }
-      }, 25000);
-
       window.__vakemaLoad = {
         at: function (p) { target = Math.max(target, p); },
         // Fill the bar to 100 % and resolve once it is drawn full.
@@ -135,28 +129,26 @@
       };
     })();
 
-    // Safety net: if the 3D module can't load (blocked CDN, ad blocker, browser without
-    // import maps) or the visitor picks the 2D page, show it instead of the loader.
-    window.__vakemaFail = function (force) {
-      if (!document.body) { document.addEventListener('DOMContentLoaded', function () { window.__vakemaFail(force); }); return; }
-      var b = document.body, started = window.__vakemaStarted;
-      if ((started && force !== true) || b.classList.contains('no-webgl')) return;
-      window.__vakemaLoad.stop();
-      b.classList.remove('is-intro');
-      b.classList.add('no-webgl'); // js/main.js stops building the 3D scene when it sees this
+    // The site is 3D only. If it can't start (a download failed, no WebGL, a browser without
+    // import maps), the loader stays and explains why, with a button to try again.
+    window.__vakemaError = function (kind) {
+      if (!document.body) { document.addEventListener('DOMContentLoaded', function () { window.__vakemaError(kind); }); return; }
       var loader = document.getElementById('loader');
-      if (loader) loader.remove();
-      document.getElementById('skip-btn').hidden = true;
-      if (started) return; // js/main.js already wired the menu
-      var menu = document.getElementById('menu-btn'), links = document.getElementById('nav-links');
-      menu.addEventListener('click', function () {
-        var open = menu.getAttribute('aria-expanded') !== 'true';
-        menu.setAttribute('aria-expanded', String(open));
-        links.classList.toggle('is-open', open);
-      });
+      if (!loader || loader.classList.contains('is-error')) return;
+      window.__vakemaLoad.stop();
+      var msg = kind === 'webgl'
+        ? ['Šis įrenginys nepalaiko 3D grafikos', 'Atnaujinkite naršyklę arba įjunkite aparatinį spartinimą ir bandykite dar kartą.']
+        : ['Nepavyko įkelti showroomo', 'Patikrinkite interneto ryšį ir bandykite dar kartą.'];
+      loader.querySelector('.loader-error-title').textContent = msg[0];
+      loader.querySelector('.loader-error-text').textContent = msg[1];
+      loader.querySelector('.loader-retry').onclick = function () { location.reload(); };
+      loader.classList.add('is-error');
+      loader.querySelector('.loader-error').hidden = false;
     };
+    // Browsers without import maps never run js/main.js at all
+    if (!(HTMLScriptElement.supports && HTMLScriptElement.supports('importmap'))) window.__vakemaError('webgl');
   </script>
-  <script type="module" src="js/main.js" onerror="window.__vakemaFail()"></script>
+  <script type="module" src="js/main.js" onerror="window.__vakemaError('network')"></script>
 </head>
 <body class="is-intro">
   <a class="skip-link" href="#turinys" data-i18n="skip">Pereiti prie turinio</a>
@@ -178,7 +170,11 @@
         <span class="loader-fill"><span class="loader-spark"></span></span>
       </div>
       <p class="loader-tip" aria-hidden="true"><b>Patarimas</b><span class="loader-tip-text">Paspauskite ant lango ar durų, kad pamatytumėte juos iš arti.</span></p>
-      <button class="loader-slow" type="button" hidden data-i18n="loader.slow">Lėtas ryšys? Atidaryti be 3D</button>
+      <div class="loader-error" role="alert" hidden>
+        <p class="loader-error-title"></p>
+        <p class="loader-error-text"></p>
+        <button class="btn btn-gold loader-retry" type="button">Bandyti dar kartą</button>
+      </div>
     </div>
   </div>
 

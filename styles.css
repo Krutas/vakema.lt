@@ -128,11 +128,12 @@ a { color: inherit; }
 .loader-tip-text { transition: opacity .3s; }
 .loader-tip-text.is-out { opacity: 0; }
 body:has(#loader) .skip-intro { opacity: 0; pointer-events: none; }
-.loader-slow {
-  margin-top: 26px; padding: 10px 16px; border-radius: 999px; border: 1px solid var(--glass-border);
-  background: rgba(255, 255, 255, .04); font: inherit; font-size: 13px; color: var(--text-primary); cursor: pointer;
-}
-.loader-slow:hover { border-color: rgba(242, 193, 78, .45); }
+/* The 3D could not start: the bar gives way to a message and a retry button */
+#loader.is-error .loader-hud, #loader.is-error .loader-bar, #loader.is-error .loader-tip { display: none; }
+#loader.is-error .loader-glow { animation: none; opacity: .4; }
+.loader-error { margin-top: 18px; text-align: center; }
+.loader-error-title { margin: 0 0 8px; font-size: 18px; font-weight: 700; color: var(--text-primary); }
+.loader-error-text { max-width: 380px; margin: 0 auto 20px; font-size: 14px; line-height: 1.5; color: var(--text-muted); }
 @keyframes logo-in { from { opacity: 0; filter: blur(10px); transform: scale(1.04); } to { opacity: .92; filter: blur(0); transform: none; } }
 
 /* ---------- Reveal choreography (driven by body.is-intro) ---------- */
@@ -550,17 +551,6 @@ body:not(.is-intro) .skip-intro { opacity: 0; pointer-events: none; }
 }
 .toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
 
-/* ---------- No-WebGL fallback ---------- */
-.no-webgl #scene { display: none; }
-.no-webgl {
-  background:
-    radial-gradient(60% 50% at 70% 40%, rgba(242, 193, 78, .14), transparent 70%),
-    linear-gradient(180deg, #0c0e12, var(--bg-void));
-}
-.no-webgl .hero::before {
-  content: ''; position: absolute; right: 6vw; top: 22vh; width: min(46vw, 620px); aspect-ratio: 2 / 1;
-  background: url('assets/vakema-logo.jpg') center / contain no-repeat; mix-blend-mode: screen; opacity: .85;
-}
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1100px) {

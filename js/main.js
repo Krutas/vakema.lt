@@ -24,32 +24,26 @@ const store = {
   set(k, v) { try { localStorage.setItem(k, v); } catch { /* storage blocked */ } },
 };
 
-// If the safety net in index.html already switched to the 2D page (slow or blocked
-// network), leave it alone instead of starting the 3D scene on top of it.
-const safetyNetFired = body.classList.contains('no-webgl');
-window.__vakemaStarted = true;
 // Loader progress bar from index.html; this file reports the steps after the downloads.
 const progress = window.__vakemaLoad || { at() {}, finish: () => Promise.resolve(), stop() {} };
-// The visitor can still pick the 2D page while the scene is being built.
-const aborted = () => body.classList.contains('no-webgl');
 const nextFrame = () => new Promise((r) => requestAnimationFrame(() => r()));
+// The site is 3D only: if it can't start, the loader stays and shows why (see index.html).
+const loadError = (kind) => window.__vakemaError?.(kind);
 
 initI18n();
+initChrome();
 
 let renderer = null;
-if (!safetyNetFired) {
-  initChrome();
-  try {
-    renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
-  } catch (err) {
-    console.warn('WebGL unavailable, using 2D fallback.', err);
-  }
-  if (renderer) start().catch((err) => { console.error(err); enterFallback(); });
-  else enterFallback();
+try {
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
+} catch (err) {
+  console.warn('WebGL unavailable.', err);
 }
+if (renderer) start().catch((err) => { console.error(err); loadError('error'); });
+else loadError('webgl');
 
 /* ------------------------------------------------------------------ */
-/* Page chrome that works with or without WebGL                        */
+/* Page chrome: navigation, sheets, language                           */
 /* ------------------------------------------------------------------ */
 function initChrome() {
   const nav = $('#nav');
@@ -170,14 +164,6 @@ function toast(text) {
   el.classList.add('is-visible');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('is-visible'), 2600);
-}
-
-function enterFallback() {
-  progress.stop();
-  body.classList.remove('is-intro');
-  body.classList.add('no-webgl');
-  $('#loader')?.remove();
-  $('#skip-btn').hidden = true;
 }
 
 function overviewView() {
@@ -610,7 +596,6 @@ async function start() {
   const fonts = Promise.race([document.fonts?.ready, new Promise((r) => setTimeout(r, 1500))]);
   await Promise.all([minBrandBeat, fonts]);
   await progress.finish();
-  if (aborted()) { renderer.dispose(); return; }
   opened = true;
 
   renderer.setAnimationLoop(frame);

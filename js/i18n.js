@@ -7,7 +7,6 @@
 
 const EN_HTML = {
   'skip': 'Skip to content',
-  'loader.slow': 'Slow connection? Open without 3D',
   'nav.home': 'Home',
   'nav.windows': 'Windows',
   'nav.doors': 'Doors',

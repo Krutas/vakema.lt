@@ -8,7 +8,7 @@ furnished home showroom (windows wall left, doors wall right) set in a daylight 
 - Animated Kontaktai panel (sample contact details – replace before launch)
 - Four-step "Gauti pasiūlymą" quote request (demo: nothing is sent yet – plan in [docs/getoffer.md](docs/getoffer.md))
 - LT / EN language switch (manual only)
-- Falls back to a 2D page if the 3D module can't load
+- 3D only: a loader with a progress bar waits until every asset is ready; if the 3D can't start (no WebGL, a failed download), it shows a message with a retry button
 
 Plan and brief: [docs/3d-showroom](docs/3d-showroom/). The previous site lives on the
 `legacy-main` branch.
