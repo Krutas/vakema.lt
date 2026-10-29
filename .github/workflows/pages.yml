@@ -34,7 +34,10 @@ jobs:
       # "Mūsų darbai": every photo in gallery/ is resized (WebP + thumbnail) and listed in
       # _site/gallery/gallery.json, so adding a photo to the folder is all it takes.
       - name: Build gallery
-        run: node tools/gallery.mjs --out _site/gallery
+        run: |
+          # The runner image has no image tools: ImageMagick does the resizing
+          sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends imagemagick > /dev/null
+          node tools/gallery.mjs --out _site/gallery
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
