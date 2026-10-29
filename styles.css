@@ -668,11 +668,21 @@ body.is-focus .tier-switch, body.sheet-open .tier-switch { opacity: 0; pointer-e
   .nav-links {
     position: fixed; left: 16px; right: 16px; top: 88px; flex-direction: column; gap: 2px; padding: 10px;
     border-radius: 18px; border: 1px solid var(--glass-border);
-    background: rgba(18, 20, 24, .72); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+    background: linear-gradient(180deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .02)), rgba(16, 17, 21, .97);
+    backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12), 0 24px 60px rgba(0, 0, 0, .6);
     opacity: 0; visibility: hidden; transform: translateY(-8px); transition: opacity .3s, transform .3s, visibility 0s .3s;
   }
   .nav-links.is-open { opacity: 1; visibility: visible; transform: none; transition: opacity .3s, transform .3s; }
-  .nav-links a { padding: 14px 16px; font-size: 16px; }
+  .nav-links a { padding: 14px 16px; font-size: 16px; font-weight: 600; color: var(--chrome-100); }
+  .nav-links a[aria-current="page"] { color: var(--gold-300); }
+  .nav-tier button { color: var(--chrome-300); }
+  /* Dimmed page behind the open menu; tapping it closes the menu (js/chrome.js) */
+  body::after {
+    content: ''; position: fixed; inset: 0; z-index: 29; background: rgba(4, 5, 7, .55);
+    opacity: 0; visibility: hidden; transition: opacity .3s, visibility 0s .3s;
+  }
+  body.menu-open::after { opacity: 1; visibility: visible; transition: opacity .3s; }
   .fx-vignette {
     background:
       radial-gradient(120% 95% at 50% 35%, transparent 50%, rgba(0, 0, 0, .7) 100%),

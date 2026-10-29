@@ -21,10 +21,15 @@ export function initChrome() {
 
   const menuBtn = $('#menu-btn');
   const links = $('#nav-links');
-  menuBtn.addEventListener('click', () => {
-    const open = menuBtn.getAttribute('aria-expanded') !== 'true';
+  const setMenu = (open) => {
     menuBtn.setAttribute('aria-expanded', String(open));
     links.classList.toggle('is-open', open);
+    body.classList.toggle('menu-open', open);
+  };
+  menuBtn.addEventListener('click', () => setMenu(menuBtn.getAttribute('aria-expanded') !== 'true'));
+  // Phone menu: a tap on the dimmed page around it (body::after in CSS) closes it
+  document.addEventListener('click', (e) => {
+    if (body.classList.contains('menu-open') && !e.target.closest('.nav')) setMenu(false);
   });
 
   // "Under development" notice: dismissible for the session
@@ -53,8 +58,7 @@ export function initChrome() {
       section.getBoundingClientRect(); // commit the closed state so the opening animates
       section.classList.add('is-open');
       body.classList.add('sheet-open');
-      menuBtn.setAttribute('aria-expanded', 'false');
-      links.classList.remove('is-open');
+      setMenu(false);
       if (navLink) { homeLink.removeAttribute('aria-current'); navLink.setAttribute('aria-current', 'page'); }
       history.replaceState(null, '', hash);
       activeSheet = sheet;
