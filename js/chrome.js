@@ -1,8 +1,9 @@
 // Page chrome shared by the 3D showroom and the lite version: navigation, sheets
 // (contacts, quote), toasts and the product card text. No three.js here.
 import { PRODUCTS } from './products.js';
-import { onLangChange, t } from './i18n.js';
+import { getLang, onLangChange, t } from './i18n.js';
 import { initQuote } from './quote.js';
+import { initWorks } from './works.js';
 
 const $ = (s) => document.querySelector(s);
 const body = document.body;
@@ -91,6 +92,15 @@ export function initChrome() {
     toast(t('toast.sent'));
   });
 
+  // Mūsų darbai: gallery carousel, built on first open
+  const worksLink = links.querySelector('[data-works]');
+  const gallery = initWorks($('#darbai'), { t, getLang, onLangChange, products: PRODUCTS });
+  const works = createSheet($('#darbai'), { hash: '#darbai', navLink: worksLink, onOpen: () => gallery.open() });
+  document.querySelectorAll('[data-works]').forEach((a) => a.addEventListener('click', (e) => {
+    e.preventDefault();
+    works.open(a);
+  }));
+
   // Gauti pasiūlymą: any [data-quote] button opens it; a product card pre-fills that product
   const quoteSheet = createSheet($('#pasiulymas'), { hash: '#pasiulymas' });
   const quote = initQuote($('#pasiulymas'), { products: PRODUCTS, t, onLangChange });
@@ -119,6 +129,7 @@ export function initChrome() {
     }
   }, true);
   if (location.hash === '#kontaktai') contacts.open(contactsLink);
+  if (location.hash === '#darbai') works.open(worksLink);
   if (location.hash === '#pasiulymas') quoteSheet.open($('.nav-cta'));
 
   // 3D ⇄ lite switch: the lite choice lasts for this tab only, 3D stays the default

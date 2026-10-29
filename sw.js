@@ -3,7 +3,8 @@
 // "temporary files" notice – see initCacheNotice() in js/chrome.js.
 //
 //   pages, shots.json  network first, cached copy when offline (updates arrive at once)
-//   js/, styles.css    cached copy first, refreshed in the background (updates on the next visit)
+//   js/, styles.css,   cached copy first, refreshed in the background (updates on the next visit)
+//   gallery/
 //   assets/, CDN       cached copy first (versioned URLs: three@0.165.0, lite shots ?v=<render>)
 //
 // Bump VERSION to drop everything cached by an older build.
@@ -46,7 +47,7 @@ self.addEventListener('fetch', (e) => {
   if (url.origin === location.origin) {
     if (req.mode === 'navigate' || url.pathname.endsWith('.json')) e.respondWith(networkFirst(req));
     else if (url.pathname.includes('/assets/')) e.respondWith(cacheFirst(req, true));
-    else if (/\.(js|css)$/.test(url.pathname)) e.respondWith(staleWhileRevalidate(e, req));
+    else if (/\.(js|css)$/.test(url.pathname) || url.pathname.includes('/gallery/')) e.respondWith(staleWhileRevalidate(e, req));
   } else if (CDN.includes(url.hostname)) {
     e.respondWith(cacheFirst(req, false));
   }

@@ -5,6 +5,8 @@ furnished home showroom (windows wall left, doors wall right) set in a daylight 
 
 - Cursor-guided camera, glass navigation, clickable windows and doors
 - Langai / Durys wall views; the mouse wheel (or a vertical swipe on phones) steps through the products
+- "Mūsų darbai" gallery carousel fed by the `gallery/` folder: drop photos in (subfolder = tag, see
+  [gallery/README.md](gallery/README.md)); the Pages workflow resizes them and lists them in `gallery.json`
 - Kontaktai window over the showroom, closes on a click outside (the phone number is still a sample); Google map of the showroom address
 - Four-step "Gauti pasiūlymą" quote request (demo: nothing is sent yet – plan in [docs/getoffer.md](docs/getoffer.md))
 - LT / EN language switch (manual only)
