@@ -5,14 +5,15 @@ furnished home showroom (windows wall left, doors wall right) set in a daylight 
 
 - Cursor-guided camera, glass navigation, clickable windows and doors
 - Langai / Durys wall views; the mouse wheel (or a vertical swipe on phones) steps through the products
-- Animated Kontaktai panel (sample contact details – replace before launch)
+- Kontaktai window over the showroom, closes on a click outside (phone and address are still samples)
 - Four-step "Gauti pasiūlymą" quote request (demo: nothing is sent yet – plan in [docs/getoffer.md](docs/getoffer.md))
 - LT / EN language switch (manual only)
-- Device check before anything heavy loads: full 3D, reduced 3D (no ambient occlusion, lower resolution) or a
-  lite version without WebGL – pre-rendered stills and clips of the same scene with clickable products.
-  If the 3D can't start, the lite version opens; `?lite=1` / `?3d=1` or the corner switch override the choice
-- The site's files stay in the browser after the first visit (`sw.js`); a one-time notice tells visitors and
-  lets them opt out
+- 3D is always the default: weak devices, software rendering or Save-Data get a reduced 3D (no ambient
+  occlusion, lower resolution). A lite version without WebGL – pre-rendered stills and clips of the same
+  scene with clickable products – opens only when the visitor asks for it (loader button, corner switch,
+  `?lite=1`; this tab only) or when the 3D can't run at all
+- The site's files stay in the browser after the first visit (`sw.js`); the loader says so, and a notice
+  after loading lets visitors opt out or hide it for good
 
 Plan and brief: [docs/3d-showroom](docs/3d-showroom/). The previous site lives on the
 `legacy-main` branch.
