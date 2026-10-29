@@ -3,20 +3,65 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Vakema – langai ir durys moderniems namams</title>
-  <meta name="description" content="Langų ir durų keitimas bei montavimas. Skaitmeninis Vakema showroomas – pasirinkite sprendimą, mes pasirūpinsime visa kita." />
+  <title>Langai ir durys su montavimu visoje Lietuvoje | Vakema</title>
+  <meta name="description" content="Langų ir durų keitimas: matavimas, gamyba ir montavimas visoje Lietuvoje. Nemokamas matavimas, preliminarus pasiūlymas per 1 darbo dieną." />
   <meta name="theme-color" content="#07080A" />
   <!-- Review build: keep out of search engines. Remove this line when the site goes live. -->
   <meta name="robots" content="noindex, nofollow" />
-  <!-- Link previews (Messenger, Facebook, Slack). og:image must be an absolute URL:
-       change the domain if the site moves away from krutas.github.io/vakema.lt. -->
+  <!-- Absolute URLs (canonical, og:*, the JSON-LD below, robots.txt, sitemap.xml) point at the
+       review host. At launch replace every https://krutas.github.io/vakema.lt/ with https://vakema.lt/. -->
+  <link rel="canonical" href="https://krutas.github.io/vakema.lt/" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Vakema – patikimi sprendimai moderniems namams" />
-  <meta property="og:description" content="Langų ir durų keitimas bei montavimas. Skaitmeninis Vakema showroomas." />
+  <meta property="og:site_name" content="Vakema" />
+  <meta property="og:locale" content="lt_LT" />
+  <meta property="og:locale:alternate" content="en_GB" />
+  <meta property="og:url" content="https://krutas.github.io/vakema.lt/" />
+  <meta property="og:title" content="Vakema – langai ir durys moderniems namams" />
+  <meta property="og:description" content="Langų ir durų keitimas bei montavimas visoje Lietuvoje. Skaitmeninis Vakema showroomas." />
   <meta property="og:image" content="https://krutas.github.io/vakema.lt/assets/og-image.jpg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Vakema skaitmeninis langų ir durų showroomas" />
   <meta name="twitter:card" content="summary_large_image" />
+  <!-- Business details for search results. Add "telephone" and "address" once the real ones are
+       confirmed (the page still shows a placeholder number); never publish placeholders here. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "HomeAndConstructionBusiness",
+        "@id": "https://krutas.github.io/vakema.lt/#business",
+        "name": "Vakema",
+        "slogan": "Kokybė. Patikimumas. Jūsų ramybė.",
+        "description": "Langų ir durų keitimas bei montavimas visoje Lietuvoje: konsultacija, matavimas, gamyba ir montavimas.",
+        "url": "https://krutas.github.io/vakema.lt/",
+        "logo": "https://krutas.github.io/vakema.lt/assets/vakema-logo.jpg",
+        "image": "https://krutas.github.io/vakema.lt/assets/og-image.jpg",
+        "email": "info@vakema.lt",
+        "areaServed": { "@type": "Country", "name": "Lietuva" },
+        "knowsLanguage": ["lt", "en"],
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Langai ir durys",
+          "itemListElement": [
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Langų keitimas ir montavimas" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Durų keitimas ir montavimas" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Nemokamas matavimas" } }
+          ]
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://krutas.github.io/vakema.lt/#website",
+        "url": "https://krutas.github.io/vakema.lt/",
+        "name": "Vakema",
+        "inLanguage": "lt-LT",
+        "publisher": { "@id": "https://krutas.github.io/vakema.lt/#business" }
+      }
+    ]
+  }
+  </script>
   <link rel="icon" href="assets/vakema-mark.svg" type="image/svg+xml" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -289,9 +334,9 @@
     <nav aria-label="Pagrindinė navigacija" data-i18n-attr="aria-label:a.mainNav">
       <ul class="nav-links" id="nav-links">
         <li><a href="./" aria-current="page" data-i18n="nav.home">Pagrindinis</a></li>
-        <li><a href="#" data-soon data-i18n="nav.windows">Langai</a></li>
-        <li><a href="#" data-soon data-i18n="nav.doors">Durys</a></li>
-        <li><a href="#" data-soon data-i18n="nav.install">Montavimas</a></li>
+        <li><a href="langai/" data-i18n="nav.windows">Langai</a></li>
+        <li><a href="durys/" data-i18n="nav.doors">Durys</a></li>
+        <li><a href="montavimas/" data-i18n="nav.install">Montavimas</a></li>
         <li><a href="#darbai" data-works data-i18n="nav.work">Mūsų darbai</a></li>
         <li><a href="#kontaktai" data-contacts data-i18n="nav.contact">Kontaktai</a></li>
         <li class="nav-tier"><button type="button" data-tier-switch></button></li>
@@ -323,11 +368,23 @@
     <nav class="hero-chips reveal" aria-label="Kategorijos" data-i18n-attr="aria-label:a.categories">
       <button class="chip" type="button" data-wall="Langai" data-i18n="chip.windows"><i>01</i>Langai</button>
       <button class="chip" type="button" data-wall="Durys" data-i18n="chip.doors"><i>02</i>Durys</button>
-      <a class="chip" href="#" data-soon data-i18n="chip.install"><i>03</i>Montavimas<em class="soon">Netrukus</em></a>
+      <a class="chip" href="montavimas/" data-i18n="chip.install"><i>03</i>Montavimas</a>
     </nav>
 
-    <!-- Accessible mirror of the 3D products (keyboard + screen readers) -->
-    <ul class="sr-only" id="product-list" aria-label="Showroomo gaminiai" data-i18n-attr="aria-label:a.products"></ul>
+    <!-- Accessible mirror of the 3D products (keyboard + screen readers). The static items are what
+         crawlers and no-JS visitors see; js/main.js and js/lite.js replace them with buttons. -->
+    <ul class="sr-only" id="product-list" aria-label="Showroomo gaminiai" data-i18n-attr="aria-label:a.products">
+      <li>Langai: Varstomas-verčiamas langas</li>
+      <li>Langai: Stumdoma langų sistema</li>
+      <li>Langai: Langas su varstomu viršlangiu</li>
+      <li>Durys: Dvivėrės stiklinės durys</li>
+      <li>Durys: Terasos stumdomos durys</li>
+      <li>Durys: Lauko durys</li>
+    </ul>
+    <noscript>
+      <p class="noscript-note">Showroomui reikia JavaScript. Pasiūlymo galite paprašyti el. paštu
+        <a href="mailto:info@vakema.lt">info@vakema.lt</a>.</p>
+    </noscript>
   </main>
 
   <div class="dev-banner reveal" id="dev-banner" role="note">

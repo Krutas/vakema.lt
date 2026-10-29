@@ -19,7 +19,7 @@ const EN_HTML = {
   'hero.lead': 'Window and door replacement and installation. Choose your solution – we’ll take care of the rest.',
   'chip.windows': '<i>01</i>Windows',
   'chip.doors': '<i>02</i>Doors',
-  'chip.install': '<i>03</i>Installation<em class="soon">Soon</em>',
+  'chip.install': '<i>03</i>Installation',
   'dev.title': 'Preview version',
   'dev.text': 'The site is still in development – some pages and the quote form are on the way.',
   'dev.short': 'Site in development',

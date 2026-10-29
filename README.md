@@ -10,6 +10,9 @@ furnished home showroom (windows wall left, doors wall right) set in a daylight 
 - Kontaktai window over the showroom, closes on a click outside (the phone number is still a sample); Google map of the showroom address
 - Four-step "Gauti pasiūlymą" quote request (demo: nothing is sent yet – plan in [docs/getoffer.md](docs/getoffer.md))
 - LT / EN language switch (manual only)
+- Content pages for search engines: [langai/](langai/), [durys/](durys/), [montavimas/](montavimas/) (Lithuanian only,
+  no three.js, `js/page.js`); their product links open the quote form pre-filled (`#pasiulymas=<id>`).
+  Structured data, `robots.txt` and `sitemap.xml` point at the review host until launch
 - 3D is always the default: weak devices, software rendering or Save-Data get a reduced 3D (no ambient
   occlusion, lower resolution). A lite version without WebGL – pre-rendered stills and clips of the same
   scene with clickable products – opens only when the visitor asks for it (loader button, corner switch,

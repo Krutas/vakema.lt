@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The panels (#kontaktai, #darbai, #pasiulymas) are not separate pages. Add the /en/ pages
+     here when they exist. At launch replace https://krutas.github.io/vakema.lt/ with https://vakema.lt/. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://krutas.github.io/vakema.lt/</loc><lastmod>2026-10-29</lastmod></url>
+  <url><loc>https://krutas.github.io/vakema.lt/langai/</loc><lastmod>2026-10-29</lastmod></url>
+  <url><loc>https://krutas.github.io/vakema.lt/durys/</loc><lastmod>2026-10-29</lastmod></url>
+  <url><loc>https://krutas.github.io/vakema.lt/montavimas/</loc><lastmod>2026-10-29</lastmod></url>
+</urlset>

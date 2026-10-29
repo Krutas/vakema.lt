@@ -315,6 +315,7 @@ async function start() {
 
   // Accessible product list, as in the 3D version
   const list = $('#product-list');
+  list.replaceChildren(); // drop the static items from index.html
   for (const spec of PRODUCTS) {
     const li = document.createElement('li');
     const b = document.createElement('button');

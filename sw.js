@@ -8,7 +8,7 @@
 //   assets/, CDN       cached copy first (versioned URLs: three@0.165.0, lite shots ?v=<render>)
 //
 // Bump VERSION to drop everything cached by an older build.
-const VERSION = 'vakema-v1';
+const VERSION = 'vakema-v2';
 const CDN = ['cdn.jsdelivr.net', 'fonts.googleapis.com', 'fonts.gstatic.com'];
 
 self.addEventListener('install', () => self.skipWaiting());
