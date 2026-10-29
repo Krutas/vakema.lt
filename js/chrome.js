@@ -184,8 +184,21 @@ export function initChrome() {
     if (hash === '#pasiulymas') openQuote(product, a, 'link');
     else if (hash === '#kontaktai') contacts.open(a);
     else if (hash === '#darbai') works.open(a);
-    else pageSheet.close(); // Pagrindinis, "Apžiūrėti 3D showroome"
+    else goHome(); // Pagrindinis, "Apžiūrėti 3D showroome"
   });
+
+  // Pagrindinis and the logo: close any window and return the showroom to its main view
+  // (js/main.js, js/lite.js listen for vakema:home) instead of reloading the page
+  function goHome() {
+    activeSheet?.close(false);
+    setMenu(false);
+    dispatchEvent(new CustomEvent('vakema:home'));
+  }
+  document.querySelectorAll('a[href="./"]').forEach((a) => a.addEventListener('click', (e) => {
+    if (newTab(e)) return;
+    e.preventDefault();
+    goHome();
+  }));
 
   // Capture phase, so Escape closes the sheet before the showroom handles it
   addEventListener('keydown', (e) => {
