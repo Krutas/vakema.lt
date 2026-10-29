@@ -62,24 +62,78 @@ a { color: inherit; }
   60% { transform: translate(-2%, -1%); } 80% { transform: translate(3%, 3%); } 100% { transform: translate(0, 0); }
 }
 
-/* ---------- Loader (brand beat) ---------- */
+/* ---------- Loader (logo + progress, until every asset is ready) ---------- */
 #loader {
   position: fixed; inset: 0; z-index: 60; background: var(--bg-void);
   display: grid; place-items: center;
 }
+/* Soft gold light breathing behind the logo */
+.loader-glow {
+  position: absolute; left: 50%; top: 50%; width: min(120vw, 1100px); aspect-ratio: 1; translate: -50% -55%;
+  background: radial-gradient(closest-side, rgba(242, 193, 78, .16), rgba(242, 193, 78, .05) 45%, transparent 70%);
+  animation: glow-breathe 3.2s ease-in-out infinite alternate; pointer-events: none;
+}
+@keyframes glow-breathe { from { opacity: .55; scale: .92; } to { opacity: 1; scale: 1.04; } }
+.loader-brand { position: relative; display: flex; flex-direction: column; align-items: center; width: min(80vw, 560px); }
 .loader-logo {
-  width: min(62vw, 560px); height: auto; mix-blend-mode: screen; opacity: 0;
+  width: 100%; height: auto; mix-blend-mode: screen; opacity: 0;
   animation: logo-in 1.4s var(--ease-out) .1s forwards;
 }
-.loader-line {
-  position: absolute; left: 50%; top: calc(50% + min(19vw, 170px));
-  width: min(70vw, 640px); height: 1px; transform: translateX(-50%) scaleX(0);
-  background: linear-gradient(90deg, transparent, var(--gold-300), var(--chrome-100), transparent);
-  box-shadow: 0 0 12px var(--gold-300);
-  animation: line-draw 1.6s var(--ease-out) .4s forwards;
+/* HUD row: what is happening + big percentage, right above the bar */
+.loader-hud { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; width: 100%; margin-top: 10px; }
+.loader-stage {
+  font-family: var(--font-display); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--text-muted);
+  animation: stage-blink 1.6s ease-in-out infinite;
 }
+@keyframes stage-blink { 50% { color: var(--text-primary); } }
+.loader-pct {
+  font-family: var(--font-display); font-size: clamp(22px, 5vw, 30px); line-height: 1; font-variant-numeric: tabular-nums;
+  color: var(--gold-300); text-shadow: 0 0 18px rgba(242, 193, 78, .55);
+}
+/* Game-style bar: framed track, striped gold fill, shimmer and a spark at the head.
+   The fill width is set from the head script in index.html. */
+.loader-bar {
+  position: relative; width: 100%; height: 14px; margin-top: 10px; padding: 3px; border-radius: 999px;
+  border: 1px solid rgba(242, 193, 78, .35); background: rgba(0, 0, 0, .55);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, .8), 0 0 24px rgba(242, 193, 78, .08);
+}
+.loader-fill {
+  position: relative; display: block; width: 0; height: 100%; min-width: 6px; border-radius: inherit;
+  background: linear-gradient(180deg, #FFE7A3, var(--gold-300) 45%, #8A5A12);
+  box-shadow: 0 0 14px rgba(242, 193, 78, .65);
+}
+.loader-fill::before, .loader-fill::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
+.loader-fill::before {
+  background: repeating-linear-gradient(-45deg, rgba(255, 255, 255, .22) 0 6px, transparent 6px 12px);
+  animation: bar-stripes .7s linear infinite;
+}
+.loader-fill::after {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .55), transparent) no-repeat;
+  background-size: 40% 100%;
+  animation: bar-shine 1.8s ease-in-out infinite;
+}
+@keyframes bar-stripes { to { background-position: 16.97px 0; } }
+@keyframes bar-shine { from { background-position: -70% 0; } to { background-position: 170% 0; } }
+.loader-spark {
+  position: absolute; right: 0; top: 50%; z-index: 1; width: 8px; height: 8px; border-radius: 50%; translate: 0 -50%;
+  background: #fff; box-shadow: 0 0 8px 3px #FFE7A3, 0 0 22px 8px rgba(242, 193, 78, .7);
+  animation: spark 0.9s ease-in-out infinite alternate;
+}
+@keyframes spark { from { opacity: .6; scale: .7; } to { opacity: 1; scale: 1.15; } }
+.loader-tip { min-height: 2.8em; margin: 18px 0 0; font-size: 13px; line-height: 1.4; text-align: center; color: var(--text-muted); }
+.loader-tip b {
+  margin-right: 8px; font-family: var(--font-display); font-size: 9.5px; font-weight: 400; letter-spacing: .22em;
+  text-transform: uppercase; color: var(--gold-300);
+}
+.loader-tip-text { transition: opacity .3s; }
+.loader-tip-text.is-out { opacity: 0; }
+body:has(#loader) .skip-intro { opacity: 0; pointer-events: none; }
+.loader-slow {
+  margin-top: 26px; padding: 10px 16px; border-radius: 999px; border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, .04); font: inherit; font-size: 13px; color: var(--text-primary); cursor: pointer;
+}
+.loader-slow:hover { border-color: rgba(242, 193, 78, .45); }
 @keyframes logo-in { from { opacity: 0; filter: blur(10px); transform: scale(1.04); } to { opacity: .92; filter: blur(0); transform: none; } }
-@keyframes line-draw { to { transform: translateX(-50%) scaleX(1); } }
 
 /* ---------- Reveal choreography (driven by body.is-intro) ---------- */
 .reveal { transition: opacity 1s var(--ease-out), transform 1s var(--ease-out), visibility 0s; }

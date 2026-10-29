@@ -7,6 +7,7 @@
 
 const EN_HTML = {
   'skip': 'Skip to content',
+  'loader.slow': 'Slow connection? Open without 3D',
   'nav.home': 'Home',
   'nav.windows': 'Windows',
   'nav.doors': 'Doors',
@@ -125,6 +126,7 @@ const EN_ATTR = {
   'a.closeContacts': 'Close contact',
   'a.messagePh': 'E.g. I need 4 windows and a patio door replaced',
   'a.close': 'Close',
+  'a.loading': 'Loading',
   'a.quoteCommentPh': 'E.g. second floor, window sills needed too',
 };
 

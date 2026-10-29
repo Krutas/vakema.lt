@@ -28,6 +28,11 @@ const store = {
 // network), leave it alone instead of starting the 3D scene on top of it.
 const safetyNetFired = body.classList.contains('no-webgl');
 window.__vakemaStarted = true;
+// Loader progress bar from index.html; this file reports the steps after the downloads.
+const progress = window.__vakemaLoad || { at() {}, finish: () => Promise.resolve(), stop() {} };
+// The visitor can still pick the 2D page while the scene is being built.
+const aborted = () => body.classList.contains('no-webgl');
+const nextFrame = () => new Promise((r) => requestAnimationFrame(() => r()));
 
 initI18n();
 
@@ -168,6 +173,7 @@ function toast(text) {
 }
 
 function enterFallback() {
+  progress.stop();
   body.classList.remove('is-intro');
   body.classList.add('no-webgl');
   $('#loader')?.remove();
@@ -189,6 +195,11 @@ function overviewView() {
 /* 3D experience                                                       */
 /* ------------------------------------------------------------------ */
 async function start() {
+  // Every download is in once this module runs; let the bar show it before the heavy work.
+  const minBrandBeat = new Promise((r) => setTimeout(r, reduceMotion ? 0 : 1500));
+  let opened = false;
+  progress.at(0.82);
+  await nextFrame();
   const small = Math.min(innerWidth, innerHeight) < 700;
   let dpr = Math.min(devicePixelRatio, small ? 1.5 : 1.75);
   renderer.setPixelRatio(dpr);
@@ -202,6 +213,7 @@ async function start() {
   const camera = new THREE.PerspectiveCamera(ov.fov, innerWidth / innerHeight, 0.05, 200);
   const world = buildWorld(renderer, { reflectScale: small ? 0.35 : 0.5, shadowSize: small ? 1024 : 2048, small });
   const { scene, products } = world;
+  progress.at(0.9);
 
   const rt = new THREE.WebGLRenderTarget(innerWidth * dpr, innerHeight * dpr, { type: THREE.HalfFloatType, samples: small ? 2 : 4 });
   const composer = new EffectComposer(renderer, rt);
@@ -531,7 +543,7 @@ async function start() {
     }
   }
   function skipIntro() {
-    if (mode !== 'intro') return;
+    if (mode !== 'intro' || !opened) return;
     tl.progress(1);
     finishIntro();
   }
@@ -583,20 +595,27 @@ async function start() {
   }
 
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) renderer.setAnimationLoop(null);
+    if (document.hidden || !opened) renderer.setAnimationLoop(null);
     else { clock.getDelta(); renderer.setAnimationLoop(frame); }
   });
 
-  /* ---------- Go ---------- */
+  /* ---------- Go: compile everything behind the loader, then open ---------- */
   updateRig(0, 0);
-  renderer.compile(scene, camera);
-  const minBrandBeat = new Promise((r) => setTimeout(r, reduceMotion ? 0 : 1500));
+  await nextFrame();
+  if (renderer.compileAsync) await renderer.compileAsync(scene, camera);
+  else renderer.compile(scene, camera);
+  progress.at(0.96);
+  await nextFrame();
+  composer.render(0); // first frame: compiles the post-processing shaders too
   const fonts = Promise.race([document.fonts?.ready, new Promise((r) => setTimeout(r, 1500))]);
   await Promise.all([minBrandBeat, fonts]);
+  await progress.finish();
+  if (aborted()) { renderer.dispose(); return; }
+  opened = true;
 
   renderer.setAnimationLoop(frame);
   const loader = $('#loader');
-  gsap.to(loader, { autoAlpha: 0, duration: reduceMotion ? 0 : 0.7, ease: 'power2.out', onComplete: () => loader.remove() });
+  gsap.to(loader, { autoAlpha: 0, duration: reduceMotion ? 0 : 0.7, ease: 'power2.out', onComplete: () => { progress.stop(); loader.remove(); } });
 
   if (reduceMotion) {
     skipIntro();

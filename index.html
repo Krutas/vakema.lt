@@ -34,17 +34,120 @@
   }
   </script>
   <script>
+    // Loader: fetch every file the 3D scene needs in parallel (instead of one import level
+    // at a time) and show real progress. The site only opens once everything is ready;
+    // js/main.js reports the last steps (building the scene, compiling shaders).
+    (function () {
+      var T = 'https://cdn.jsdelivr.net/npm/three@0.165.0/', J = T + 'examples/jsm/', G = 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/';
+      // [url, rough download size in kB] – keep in sync with the imports in js/
+      var modules = [
+        [T + 'build/three.module.js', 257], [G + 'index.js', 1], [G + 'gsap-core.js', 28], [G + 'CSSPlugin.js', 8],
+        [J + 'postprocessing/EffectComposer.js', 2], [J + 'postprocessing/RenderPass.js', 1], [J + 'postprocessing/UnrealBloomPass.js', 3],
+        [J + 'postprocessing/OutputPass.js', 1], [J + 'postprocessing/GTAOPass.js', 4], [J + 'postprocessing/ShaderPass.js', 1],
+        [J + 'postprocessing/MaskPass.js', 1], [J + 'postprocessing/Pass.js', 1], [J + 'shaders/CopyShader.js', 1],
+        [J + 'shaders/LuminosityHighPassShader.js', 1], [J + 'shaders/OutputShader.js', 1], [J + 'shaders/GTAOShader.js', 4],
+        [J + 'shaders/PoissonDenoiseShader.js', 2], [J + 'math/SimplexNoise.js', 3], [J + 'objects/Reflector.js', 2],
+        [J + 'geometries/RoundedBoxGeometry.js', 1],
+        ['js/main.js', 8], ['js/scene.js', 7], ['js/intro.js', 3], ['js/i18n.js', 5], ['js/quote.js', 5],
+        ['js/outdoor.js', 6], ['js/textures.js', 3], ['js/furniture.js', 4], ['js/procedural.js', 3]
+      ];
+      var LOGO = ['assets/vakema-logo.jpg', 166];
+      // What is really happening at each point of the bar (the site always opens in Lithuanian)
+      var STAGES = [[0, 'Kraunami failai'], [0.82, 'Statomas showroomas'], [0.9, 'Ruošiamos medžiagos ir šviesa'], [0.96, 'Beveik paruošta'], [1, 'Paruošta']];
+      var TIPS = [
+        'Paspauskite ant lango ar durų, kad pamatytumėte juos iš arti.',
+        'Langai – kairėje, durys – dešinėje. Rinkitės apačioje.',
+        'Pasiūlymą galite užsisakyti tiesiai iš gaminio kortelės.',
+        'Kompiuteryje slinkite pele – kamera keliaus per visus gaminius.'
+      ];
+      var DOWNLOAD_SHARE = 0.8; // the rest of the bar belongs to the steps js/main.js reports
+      var total = LOGO[1], done = 0, target = 0, shown = 0, last = -1, running = true, onFull = null;
+
+      function arrived(kb) { done += kb; target = Math.max(target, (done / total) * DOWNLOAD_SHARE); }
+
+      var preload = false;
+      try { preload = document.createElement('link').relList.supports('modulepreload'); } catch (e) { /* old browser */ }
+      modules.forEach(function (m) {
+        total += m[1];
+        if (!preload) return; // the bar then creeps until js/main.js reports in
+        var link = document.createElement('link');
+        link.rel = 'modulepreload';
+        link.href = m[0];
+        link.onload = link.onerror = function () { arrived(m[1]); };
+        document.head.appendChild(link);
+      });
+      var logo = new Image();
+      logo.onload = logo.onerror = function () { arrived(LOGO[1]); };
+      logo.src = LOGO[0];
+
+      function step() {
+        if (!running) return;
+        // Ease toward the real value, then creep a little past it so long downloads still move.
+        var goal = target >= 1 ? 1 : Math.min(target + 0.06, 0.99);
+        shown += (goal - shown) * (shown < target ? 0.14 : 0.006);
+        if (target >= 1 && shown > 0.995) shown = 1;
+        var pct = Math.floor(shown * 100);
+        if (pct !== last) {
+          var fill = document.querySelector('.loader-fill');
+          if (fill) {
+            fill.style.width = (shown * 100).toFixed(2) + '%';
+            document.querySelector('.loader-num').textContent = pct;
+            document.querySelector('.loader-bar').setAttribute('aria-valuenow', pct);
+            var label = STAGES[0][1];
+            STAGES.forEach(function (s) { if (shown >= s[0]) label = s[1]; });
+            var stage = document.querySelector('.loader-stage');
+            if (stage.textContent !== label) stage.textContent = label;
+            last = pct;
+          }
+        }
+        if (shown === 1 && onFull) { onFull(); onFull = null; }
+        requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+
+      // Game-style tips under the bar, one every few seconds
+      var tip = 0;
+      var tipTimer = setInterval(function () {
+        var el = document.querySelector('.loader-tip-text');
+        if (!running || !el) return;
+        el.classList.add('is-out');
+        setTimeout(function () {
+          tip = (tip + 1) % TIPS.length;
+          el.textContent = TIPS[tip];
+          el.classList.remove('is-out');
+        }, 300);
+      }, 3600);
+
+      // Very slow or stalled connection: offer the 2D page instead of waiting forever.
+      setTimeout(function () {
+        var slow = running && document.querySelector('.loader-slow');
+        if (slow) { slow.hidden = false; slow.onclick = function () { window.__vakemaFail(true); }; }
+      }, 25000);
+
+      window.__vakemaLoad = {
+        at: function (p) { target = Math.max(target, p); },
+        // Fill the bar to 100 % and resolve once it is drawn full.
+        finish: function () {
+          target = 1;
+          return new Promise(function (r) { onFull = r; setTimeout(r, 1200); });
+        },
+        stop: function () { running = false; clearInterval(tipTimer); }
+      };
+    })();
+
     // Safety net: if the 3D module can't load (blocked CDN, ad blocker, browser without
-    // import maps), show the 2D page instead of leaving the loader on screen.
-    window.__vakemaFail = function () {
-      if (!document.body) { document.addEventListener('DOMContentLoaded', window.__vakemaFail); return; }
-      var b = document.body;
-      if (window.__vakemaStarted || b.classList.contains('no-webgl')) return;
+    // import maps) or the visitor picks the 2D page, show it instead of the loader.
+    window.__vakemaFail = function (force) {
+      if (!document.body) { document.addEventListener('DOMContentLoaded', function () { window.__vakemaFail(force); }); return; }
+      var b = document.body, started = window.__vakemaStarted;
+      if ((started && force !== true) || b.classList.contains('no-webgl')) return;
+      window.__vakemaLoad.stop();
       b.classList.remove('is-intro');
-      b.classList.add('no-webgl');
+      b.classList.add('no-webgl'); // js/main.js stops building the 3D scene when it sees this
       var loader = document.getElementById('loader');
       if (loader) loader.remove();
       document.getElementById('skip-btn').hidden = true;
+      if (started) return; // js/main.js already wired the menu
       var menu = document.getElementById('menu-btn'), links = document.getElementById('nav-links');
       menu.addEventListener('click', function () {
         var open = menu.getAttribute('aria-expanded') !== 'true';
@@ -52,7 +155,6 @@
         links.classList.toggle('is-open', open);
       });
     };
-    setTimeout(window.__vakemaFail, 10000);
   </script>
   <script type="module" src="js/main.js" onerror="window.__vakemaFail()"></script>
 </head>
@@ -63,10 +165,21 @@
   <div class="fx-vignette" aria-hidden="true"></div>
   <div class="fx-grain" aria-hidden="true"></div>
 
-  <!-- Loader: brand beat shown while the 3D scene compiles -->
-  <div id="loader" aria-hidden="true">
-    <img class="loader-logo" src="assets/vakema-logo.jpg" alt="" />
-    <span class="loader-line"></span>
+  <!-- Loader: logo and progress bar, shown until every asset is in and the 3D scene is ready -->
+  <div id="loader">
+    <div class="loader-glow" aria-hidden="true"></div>
+    <div class="loader-brand">
+      <img class="loader-logo" src="assets/vakema-logo.jpg" alt="" />
+      <div class="loader-hud" aria-hidden="true">
+        <span class="loader-stage">Kraunami failai</span>
+        <span class="loader-pct"><span class="loader-num">0</span>%</span>
+      </div>
+      <div class="loader-bar" role="progressbar" aria-label="Kraunama" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-i18n-attr="aria-label:a.loading">
+        <span class="loader-fill"><span class="loader-spark"></span></span>
+      </div>
+      <p class="loader-tip" aria-hidden="true"><b>Patarimas</b><span class="loader-tip-text">Paspauskite ant lango ar durų, kad pamatytumėte juos iš arti.</span></p>
+      <button class="loader-slow" type="button" hidden data-i18n="loader.slow">Lėtas ryšys? Atidaryti be 3D</button>
+    </div>
   </div>
 
   <!-- Glass navigation -->
