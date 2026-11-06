@@ -334,9 +334,9 @@
     <nav aria-label="Pagrindinė navigacija" data-i18n-attr="aria-label:a.mainNav">
       <ul class="nav-links" id="nav-links">
         <li><a href="./" aria-current="page" data-i18n="nav.home">Pagrindinis</a></li>
-        <li><a href="langai/" data-i18n="nav.windows">Langai</a></li>
-        <li><a href="durys/" data-i18n="nav.doors">Durys</a></li>
-        <li><a href="montavimas/" data-i18n="nav.install">Montavimas</a></li>
+        <li><a href="langai/" data-page="langai" data-i18n="nav.windows">Langai</a></li>
+        <li><a href="durys/" data-page="durys" data-i18n="nav.doors">Durys</a></li>
+        <li><a href="montavimas/" data-page="montavimas" data-i18n="nav.install">Montavimas</a></li>
         <li><a href="#darbai" data-works data-i18n="nav.work">Mūsų darbai</a></li>
         <li><a href="#kontaktai" data-contacts data-i18n="nav.contact">Kontaktai</a></li>
         <li class="nav-tier"><button type="button" data-tier-switch></button></li>
@@ -368,7 +368,7 @@
     <nav class="hero-chips reveal" aria-label="Kategorijos" data-i18n-attr="aria-label:a.categories">
       <button class="chip" type="button" data-wall="Langai" data-i18n="chip.windows"><i>01</i>Langai</button>
       <button class="chip" type="button" data-wall="Durys" data-i18n="chip.doors"><i>02</i>Durys</button>
-      <a class="chip" href="montavimas/" data-i18n="chip.install"><i>03</i>Montavimas</a>
+      <a class="chip" href="montavimas/" data-page="montavimas" data-i18n="chip.install"><i>03</i>Montavimas</a>
     </nav>
 
     <!-- Accessible mirror of the 3D products (keyboard + screen readers). The static items are what
@@ -482,6 +482,17 @@
   </section>
 
   <!-- Quote request: four steps + live summary. Demo build – nothing is sent (see getoffer.md). -->
+  <!-- Langai / Durys / Montavimas: the content pages (langai/, durys/, montavimas/) open in a window
+       over the showroom, like Kontaktai. js/chrome.js fetches the page and shows its <main>; the pages
+       themselves stay as they are for search engines and direct visits. -->
+  <section class="sheet sheet-window page-sheet" id="puslapis" role="dialog" aria-modal="true" aria-label="Puslapis" hidden>
+    <div class="sheet-backdrop" data-close></div>
+    <div class="sheet-panel">
+      <button class="sheet-close" type="button" data-close aria-label="Uždaryti" data-i18n-attr="aria-label:a.close">×</button>
+      <div class="sheet-inner" id="puslapis-turinys"></div>
+    </div>
+  </section>
+
   <section class="sheet quote" id="pasiulymas" role="dialog" aria-modal="true" aria-labelledby="quote-title" hidden>
     <div class="sheet-backdrop" data-close></div>
     <div class="sheet-panel">

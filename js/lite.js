@@ -254,6 +254,9 @@ async function start() {
     update();
   }
 
+  // Pagrindinis / the logo (js/chrome.js): back to the main view without reloading the page
+  addEventListener('vakema:home', () => (mode === 'intro' ? skipIntro() : goOverview()));
+
   // Wheel and vertical swipes step through the exhibits like the 3D version: windows, then doors
   function stepExhibit(dir) {
     const first = focused ? PRODUCTS.indexOf(focused)

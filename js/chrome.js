@@ -44,12 +44,21 @@ export function initChrome() {
   // Sheets: glass pages that grow out of the link or button that opened them
   const homeLink = links.querySelector('a[href="./"]');
   let activeSheet = null;
+  // `hash` and `navLink` can be given per open (one window shows several pages); opening an open
+  // sheet again only switches them.
   function createSheet(section, { hash, navLink = null, onOpen = null }) {
     let opener = null;
+    let link = null;
     const isOpen = () => section.classList.contains('is-open');
     const sheet = { section, isOpen, open, close };
-    function open(from) {
-      if (isOpen()) return;
+    function target(h, l) {
+      link?.removeAttribute('aria-current');
+      link = l;
+      if (link) { homeLink.removeAttribute('aria-current'); link.setAttribute('aria-current', 'page'); }
+      history.replaceState(null, '', h);
+    }
+    function open(from, { hash: h = hash, navLink: l = navLink } = {}) {
+      if (isOpen()) { target(h, l); return; }
       onOpen?.();
       activeSheet?.close(false);
       opener = from;
@@ -61,8 +70,7 @@ export function initChrome() {
       section.classList.add('is-open');
       body.classList.add('sheet-open');
       setMenu(false);
-      if (navLink) { homeLink.removeAttribute('aria-current'); navLink.setAttribute('aria-current', 'page'); }
-      history.replaceState(null, '', hash);
+      target(h, l);
       activeSheet = sheet;
       setTimeout(() => section.querySelector('.sheet-close').focus({ preventScroll: true }), 450);
     }
@@ -70,7 +78,7 @@ export function initChrome() {
       if (!isOpen()) return;
       section.classList.remove('is-open');
       body.classList.remove('sheet-open');
-      if (navLink) { navLink.removeAttribute('aria-current'); homeLink.setAttribute('aria-current', 'page'); }
+      if (link) { link.removeAttribute('aria-current'); homeLink.setAttribute('aria-current', 'page'); link = null; }
       history.replaceState(null, '', location.pathname + location.search);
       if (activeSheet === sheet) activeSheet = null;
       setTimeout(() => { if (!isOpen()) section.hidden = true; }, 900);
@@ -104,15 +112,93 @@ export function initChrome() {
   // Gauti pasiūlymą: any [data-quote] button opens it; a product card pre-fills that product
   const quoteSheet = createSheet($('#pasiulymas'), { hash: '#pasiulymas' });
   const quote = initQuote($('#pasiulymas'), { products: PRODUCTS, t, onLangChange });
+  function openQuote(product, from, entry) {
+    quote.setEntry(product ? `product:${product}` : entry);
+    if (product) quote.addProduct(product);
+    quoteSheet.open(from);
+  }
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-quote]');
     if (!btn) return;
     e.preventDefault();
-    const product = btn.dataset.quote;
-    quote.setEntry(product ? `product:${product}` : btn.closest('.nav') ? 'nav' : 'hero');
-    if (product) quote.addProduct(product);
-    quoteSheet.open(btn);
+    openQuote(btn.dataset.quote, btn, btn.closest('.nav') ? 'nav' : 'hero');
   });
+
+  // Langai / Durys / Montavimas: the content page's <main> in a window over the showroom, like
+  // Kontaktai. The pages stay real pages (search engines, direct visits, Ctrl+click opens one).
+  const PAGES = ['langai', 'durys', 'montavimas'];
+  const pageSheet = createSheet($('#puslapis'), { hash: '' });
+  const pageBox = $('#puslapis-turinys');
+  const pageCache = new Map();
+  const siteRoot = new URL('./', location.href).pathname;
+  const newTab = (e) => e.ctrlKey || e.metaKey || e.shiftKey || e.altKey;
+
+  function loadPage(slug) {
+    if (!pageCache.has(slug)) {
+      const url = new URL(`${slug}/`, location.href);
+      pageCache.set(slug, fetch(url).then(async (res) => {
+        if (!res.ok) throw new Error(`${url} ${res.status}`);
+        const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
+        const main = doc.querySelector('main');
+        // Links and images are written relative to the page: resolve them before moving them here
+        main.querySelectorAll('[href]').forEach((el) => el.setAttribute('href', new URL(el.getAttribute('href'), url).href));
+        main.querySelectorAll('[src]').forEach((el) => el.setAttribute('src', new URL(el.getAttribute('src'), url).href));
+        return { html: main.innerHTML, title: main.querySelector('h1')?.textContent.trim() || slug };
+      }).catch((err) => { pageCache.delete(slug); throw err; }));
+    }
+    return pageCache.get(slug);
+  }
+
+  async function showPage(slug, from) {
+    pageSheet.open(from, { hash: `#${slug}`, navLink: links.querySelector(`[data-page="${slug}"]`) });
+    pageBox.scrollTop = 0;
+    pageBox.innerHTML = `<p class="sheet-loading">${t('page.loading')}</p>`;
+    try {
+      const page = await loadPage(slug);
+      if (location.hash !== `#${slug}`) return; // closed, or another page opened meanwhile
+      pageBox.innerHTML = page.html;
+      pageSheet.section.setAttribute('aria-label', page.title);
+    } catch (err) {
+      console.warn(err);
+      location.href = new URL(`${slug}/`, location.href).href; // fall back to the page itself
+    }
+  }
+
+  document.querySelectorAll('[data-page]').forEach((a) => a.addEventListener('click', (e) => {
+    if (newTab(e)) return;
+    e.preventDefault();
+    showPage(a.dataset.page, a);
+  }));
+
+  // Links inside the window: other content pages swap in, the showroom's own windows open here
+  pageBox.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href]');
+    if (!a || newTab(e)) return;
+    const url = new URL(a.href);
+    if (url.origin !== location.origin) return;
+    const slug = PAGES.find((p) => url.pathname === `${siteRoot}${p}/`);
+    if (slug) { e.preventDefault(); showPage(slug, a); return; }
+    if (url.pathname !== siteRoot && url.pathname !== `${siteRoot}index.html`) return;
+    e.preventDefault();
+    const [hash, product] = url.hash.split('=');
+    if (hash === '#pasiulymas') openQuote(product, a, 'link');
+    else if (hash === '#kontaktai') contacts.open(a);
+    else if (hash === '#darbai') works.open(a);
+    else goHome(); // Pagrindinis, "Apžiūrėti 3D showroome"
+  });
+
+  // Pagrindinis and the logo: close any window and return the showroom to its main view
+  // (js/main.js, js/lite.js listen for vakema:home) instead of reloading the page
+  function goHome() {
+    activeSheet?.close(false);
+    setMenu(false);
+    dispatchEvent(new CustomEvent('vakema:home'));
+  }
+  document.querySelectorAll('a[href="./"]').forEach((a) => a.addEventListener('click', (e) => {
+    if (newTab(e)) return;
+    e.preventDefault();
+    goHome();
+  }));
 
   // Capture phase, so Escape closes the sheet before the showroom handles it
   addEventListener('keydown', (e) => {
@@ -130,13 +216,10 @@ export function initChrome() {
   }, true);
   if (location.hash === '#kontaktai') contacts.open(contactsLink);
   if (location.hash === '#darbai') works.open(worksLink);
+  if (PAGES.includes(location.hash.slice(1))) showPage(location.hash.slice(1), links.querySelector(`[data-page="${location.hash.slice(1)}"]`));
   // #pasiulymas=<product id>: a product link on a content page (langai/, durys/) pre-fills that product
   const [quoteHash, quoteProduct] = location.hash.split('=');
-  if (quoteHash === '#pasiulymas') {
-    quote.setEntry(quoteProduct ? `product:${quoteProduct}` : 'link');
-    if (quoteProduct) quote.addProduct(quoteProduct);
-    quoteSheet.open($('.nav-cta'));
-  }
+  if (quoteHash === '#pasiulymas') openQuote(quoteProduct, $('.nav-cta'), 'link');
 
   // 3D ⇄ lite switch: the lite choice lasts for this tab only, 3D stays the default
   const isLite = document.documentElement.dataset.tier === 'lite';
